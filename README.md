@@ -1,4 +1,11 @@
 # test-linux
 test linux code
 
-* [Gitee](https://gitee.com/rtoax/test-linux)
+# Relate Repos
+
+* [Me](https://gitee.com/rtoax/test-linux)
+* [Me GitHub](TODO)
+* [Gitee test](https://gitee.com/rtoax/test)
+* [Gitee test-github](https://gitee.com/rtoax/test-github)
+* [GitHub test](https://github.com/Rtoax/test)
+* [Notes](https://gitee.com/rtoax/notes)
