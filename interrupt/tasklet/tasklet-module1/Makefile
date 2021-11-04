@@ -1,4 +1,5 @@
-obj-m := tasklet-module.o
+obj-m += tasklet-module1.o
+obj-m += tasklet-module2.o
 
 KERNELDIR ?= /lib/modules/$(shell uname -r)/build
 
