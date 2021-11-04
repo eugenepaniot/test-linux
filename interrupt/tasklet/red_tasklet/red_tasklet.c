@@ -101,6 +101,7 @@ void create_work_queue(void)
 
 int init_module()
 {
+	printk(KERN_INFO "Hello.");
 	red_tasklet.data = (unsigned long)red_tasklet_data;
 	create_work_queue();
 	tasklet_schedule( &red_tasklet );
@@ -113,6 +114,7 @@ int init_module()
 
 void cleanup_module()
 {
+	printk(KERN_INFO "Bye.");
 	tasklet_kill( &red_tasklet );
 	flush_workqueue( wq_a );
 	destroy_workqueue( wq_a );
