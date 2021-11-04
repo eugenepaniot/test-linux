@@ -1,4 +1,5 @@
-obj-m := listtask.o
+obj-m += rculisttask.o
+obj-m += next_task.o
 
 KERNELDIR ?= /lib/modules/$(shell uname -r)/build
 
