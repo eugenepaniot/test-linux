@@ -12,7 +12,7 @@
 #include <linux/mm.h>
 #include <linux/page_ref.h> //page_count()
 #include <linux/page-flags.h> //PG_xxxx
-
+#include <asm/pgtable.h>
 
 /**
  *	Print page information
@@ -28,17 +28,24 @@ static void print_page(struct page* page)
 }
 static struct page* test__alloc(void)
 {
+	pte_t entry;
 	struct page *page = alloc_page(GFP_KERNEL|GFP_ATOMIC);
 	if(!page) {
 		printk("fail alloc_page.\n");
 	}
 	__SetPageUptodate(page); //PG_uptodate 标志内容有效
+	/* 设置页属性 */
+	entry = mk_pte(page, PAGE_SHARED);
+	entry = pte_sw_mkyoung(entry);//see do_anonymous_page()
+	entry = pte_mkwrite(pte_mkdirty(entry)); //可写属性
+	get_page(page); //_refcount++
 	return page;
 }
 
 static void test__free(struct page *page)
 {
 	if(page) {
+		put_page(page); //__refcount--
 		__free_pages(page, 0);
 	}
 }
