@@ -1,5 +1,6 @@
 obj-m += listvma.o
 obj-m += listvma-maps.o
+obj-m += find_vma.o
 
 PWD := $(shell pwd)
 KDIR ?= /lib/modules/$(shell uname -r)/build
