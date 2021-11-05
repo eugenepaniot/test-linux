@@ -15,7 +15,7 @@ int main(void)
     }  
     vadr = mmap(0, LEN, PROT_READ, MAP_PRIVATE | MAP_LOCKED, fd, 0);       
     for(loop=0;loop<2;loop++){
-        printf("[%-10s----%lx]\n",vadr+4096*loop,vadr+4096*loop);
+        printf("[%-10s----%lx] %c\n",vadr+4096*loop,vadr+4096*loop, vadr[0]);
     }
     while(1)
     {

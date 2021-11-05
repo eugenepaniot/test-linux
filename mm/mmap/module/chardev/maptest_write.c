@@ -14,7 +14,8 @@ int main(void)
         return 0;  
     }  
     vadr = mmap(0, LEN, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED, fd, 0);  
-    
+	vadr[0] = 'B';
+
     sprintf(vadr, "write from userspace");
     
     while(1)
