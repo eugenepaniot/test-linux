@@ -11,6 +11,7 @@ This interrupt shared the one irq with keyboard
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
+#include <linux/preempt.h>
 
 static int irq = 2;
 static char* devname = "devname";
@@ -41,6 +42,9 @@ static irqreturn_t myirq_handler(int irq,void* dev)
 	tasklet_init(&mytasklet,mytasklet_handler,0);
 	tasklet_schedule(&mytasklet);
 	printk("ISR is leaving..\n");
+	printk("in_irq = %ld\n", in_irq());
+	printk("in_softirq = %ld\n", in_softirq());
+	printk("in_task = %d\n", in_task());
 	count++;
 	return IRQ_HANDLED;
 }
