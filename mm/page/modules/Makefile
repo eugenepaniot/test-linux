@@ -1,4 +1,5 @@
 obj-m += alloc_page.o
+obj-m += my_zero_pfn.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
