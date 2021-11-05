@@ -10,6 +10,7 @@
 #include <linux/mm_types.h>
 #include <linux/sched.h>
 #include <linux/pid.h>
+#include <linux/dcache.h> //for d_path()
 
 static pid_t pid = 0;
 module_param(pid, int, 0644);
@@ -44,6 +45,11 @@ static void list_myvma(void)
 	//vma is a linklist
 	for(vma = mm->mmap; vma; vma = vma->vm_next)
 	{
+		char filename[256] = {0};
+		char *filep = NULL;
+		if(vma->vm_file) {
+			filep = d_path(&vma->vm_file->f_path, filename, 256);
+		}
 		//from the begining to the ending of a virtual memory area
 		printk("0x%lx-0x%lx %s%s%s%s %s\n",
 			vma->vm_start, vma->vm_end,
@@ -51,7 +57,7 @@ static void list_myvma(void)
 			(vma->vm_flags & VM_WRITE)?"w":"-",
 			(vma->vm_flags & VM_EXEC)?"x":"-",
 			(vma->vm_flags & VM_SHARED)?"s":"p",
-			vma->vm_file?"file":"anon");
+			vma->vm_file?filep:"");
 	}
 	up_read(&mm->mmap_lock);
 }
