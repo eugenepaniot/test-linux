@@ -7,13 +7,14 @@
 #include <linux/kernel.h>    // included for KERN_INFO
 #include <linux/init.h>      // included for __init and __exit macros
 #include <linux/interrupt.h> // included for request_irq and free_irq macros
+#include <linux/preempt.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Rong Tao");
 MODULE_DESCRIPTION("A Simple request irq module");
 MODULE_VERSION("0.1");
 
-static char *name = "";
+static char *name = "testirq";
 module_param( name, charp, S_IRUGO);
 MODULE_PARM_DESC(name, "irq name");	
 
@@ -25,6 +26,8 @@ MODULE_PARM_DESC(name, "irq name");
 irqreturn_t no_action(int cpl, void *dev_id)
 {
     printk(KERN_INFO "cpl %d!\n", cpl);
+	printk(KERN_INFO "in_irq = %ld\n", in_irq());
+	printk(KERN_INFO "in_hardirq = %ld\n", in_hardirq());
 	return IRQ_NONE;
 }
 
