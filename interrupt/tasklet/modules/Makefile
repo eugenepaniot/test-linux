@@ -1,3 +1,5 @@
+obj-m += red_tasklet.o
+obj-m += tasklet-bh.o
 obj-m += tasklet-module1.o
 obj-m += tasklet-module2.o
 
