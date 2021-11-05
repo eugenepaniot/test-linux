@@ -20,6 +20,7 @@
 static void print_page(struct page* page)
 {
 	printk("flags     %lx\n", page->flags);
+	printk("pageAddr  %p\n", page_address(page));
 	printk("_mapcount %d\n", page_mapcount(page));
 	printk("_refcount %d\n", page_count(page));
 	printk("PageAnon  %d\n", PageAnon(page));
