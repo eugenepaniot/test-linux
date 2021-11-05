@@ -9,6 +9,7 @@
 #include <linux/kernel.h>
 #include <linux/printk.h>
 #include <linux/slab.h>
+#include <linux/slab_def.h>
 #include <linux/gfp.h>
 
 struct test_struct {
@@ -20,14 +21,24 @@ struct test_struct {
 #define SLAB_NAME	"rtoax"
 #define SLAB_ELEM	32
 static struct kmem_cache *test_slab;
+static int count_ctor = 0;
 
 void test_constructor(void *data)
 {
-	static int count = 0;
 	struct test_struct *test = (struct test_struct*)data;
 	test->id = 1;
-	count++;
-	pr_info("Ctor test_struct. %d\n", count);
+	count_ctor++;
+}
+
+void print_kmem_cache(struct kmem_cache *cache)
+{	
+	printk("%-5s %-5s %-8s %-4s\n", "NUM", "SIZE", "OBJSIZE", "REF");
+	printk("%-5d %-5d %-8d %-4d\n", 
+			test_slab->num, 
+			test_slab->size,
+			test_slab->object_size,
+			test_slab->refcount);
+
 }
 
 static int create_slab(void)
@@ -57,6 +68,9 @@ static void test__slab(void)
 	for(i=0; i<SLAB_ELEM; i++) {
 		datas[i] = kmem_cache_alloc(test_slab, GFP_KERNEL);	
 	}
+
+	print_kmem_cache(test_slab);
+
 	for(i=0; i<SLAB_ELEM; i++) {
 		kmem_cache_free(test_slab, datas[i]);
 		datas[i] = NULL;
@@ -76,6 +90,8 @@ static int kernel_init(void)
     printk(KERN_INFO "my init.\n");
 	create_slab();
 	test__slab();
+	
+	printk("count_ctor = %d\n", count_ctor);
     return 0;
 }
 
