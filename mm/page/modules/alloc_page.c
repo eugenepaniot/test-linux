@@ -32,6 +32,7 @@ static struct page* test__alloc(void)
 	if(!page) {
 		printk("fail alloc_page.\n");
 	}
+	__SetPageUptodate(page); //PG_uptodate 标志内容有效
 	return page;
 }
 
