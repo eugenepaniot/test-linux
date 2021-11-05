@@ -8,6 +8,7 @@
 #include <linux/sched.h>
 #include <linux/rcupdate.h>
 #include <linux/init_task.h>
+#include <linux/version.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Rong Tao");
@@ -47,8 +48,11 @@ void list_from_task(struct task_struct *task)
 		do
 		{
 			struct list_head*  next;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0)
+			long               state = p->state;
+#else
 			long               state = p->__state;
-
+#endif
 			printk(KERN_INFO "%-17s %-6d %-6d %-3d %-4d %-4d %-2ld(-%9s)\n", 
                                 p->comm, p->pid, p->tgid,
                                 p->prio, p->static_prio, p->normal_prio, 

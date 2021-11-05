@@ -14,3 +14,6 @@ modules.order
 .Module.symvers.cmd
 .modules.order.cmd
 build/
+*.zip
+*.tar.*
+
