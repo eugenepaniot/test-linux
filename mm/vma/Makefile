@@ -1,4 +1,5 @@
-obj-m := listvma.o
+obj-m += listvma.o
+obj-m += listvma-pid.o
 
 PWD := $(shell pwd)
 KDIR ?= /lib/modules/$(shell uname -r)/build
