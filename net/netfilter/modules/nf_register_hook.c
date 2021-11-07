@@ -1,5 +1,6 @@
 /**
- *
+ *	nf_register_hook is delete from linux-4.13
+ *	only <= 4.12 has nf_register_hook
  *	http://heapspray.net/post/writing-a-netfilter-linux-kernel-module-for-3xx-kernels/
  *	can not compile successful
  */
