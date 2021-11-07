@@ -9,14 +9,15 @@
 #include <linux/kernel.h>
 #include <linux/fs.h>
 
-static int kernel_init(void) {
+static int kernel_init(void)
+{
     printk(KERN_INFO "my init.\n");
     // TODO
     return 0;
 }
 
-static void kernel_exit(void) {
-    kthread_stop(task);
+static void kernel_exit(void)
+{
 }
 
 module_init(kernel_init);
