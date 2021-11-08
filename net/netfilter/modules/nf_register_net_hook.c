@@ -12,6 +12,8 @@
 #include <linux/kernel.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
+#include <linux/ip.h>
+#include <linux/if_ether.h>
 
 static struct nf_hook_ops netfilter_ops;
 
@@ -19,7 +21,19 @@ unsigned int main_hook(void *priv,
 		       struct sk_buff *skb,
 		       const struct nf_hook_state *state)
 {
+	struct ethhdr *mh = eth_hdr(skb);
+	struct iphdr *iph = ip_hdr(skb);
+
     printk(KERN_INFO "PF_INET netfilter hook called.\n");
+	printk(KERN_INFO "MAC %x:%x:%x:%x:%x:%x -> %x:%x:%x:%x:%x:%x\n",
+				mh->h_source[0],mh->h_source[1],
+				mh->h_source[2],mh->h_source[3],
+				mh->h_source[4],mh->h_source[5],
+				mh->h_dest[0],mh->h_dest[1],
+				mh->h_dest[2],mh->h_dest[3],
+				mh->h_dest[4],mh->h_dest[5]);
+	printk(KERN_INFO "id: %d, protocol: %d, ttl: %d",iph->id, iph->protocol,iph->ttl);
+
     return NF_ACCEPT;
 }
 
