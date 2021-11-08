@@ -11,9 +11,12 @@
 #include <linux/sched.h>
 #include <linux/delay.h>
 
-struct task_struct *task;
+#define NR_KTHREAD 3
+
+struct task_struct *task[NR_KTHREAD];
 char *THREAD_MESSAGE = "Hello from MyThread!";
 
+static atomic_t my_count = ATOMIC_INIT(0);
 
 int thread_function(void *data)
 {
@@ -22,7 +25,8 @@ int thread_function(void *data)
 
     while (!kthread_should_stop()) {
 		msleep_interruptible(1000);
-		printk(KERN_INFO "MyKthread count %lld\n", count++);
+		printk(KERN_INFO "Count %lld, total %d\n", count++, atomic_read(&my_count));
+		atomic_inc(&my_count);
         schedule();
     }
 
@@ -32,14 +36,21 @@ int thread_function(void *data)
 
 static int kernel_init(void)
 {
+	int itask;
     printk(KERN_INFO "mykthread init.\n");
-    task = kthread_run(&thread_function, (void *)THREAD_MESSAGE, "rtoax");
+
+	for(itask = 0; itask < NR_KTHREAD; itask ++) {
+		task[itask] = kthread_run(&thread_function, (void *)THREAD_MESSAGE, "rtoax-%d", itask);
+	}
     return 0;
 }
 
 static void kernel_exit(void)
 {
-    kthread_stop(task);
+	int itask;
+	for(itask = 0; itask < NR_KTHREAD; itask ++) {
+	    kthread_stop(task[itask]);
+	}
 }
 
 module_init(kernel_init);
