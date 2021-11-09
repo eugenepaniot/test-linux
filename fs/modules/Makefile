@@ -1,3 +1,5 @@
+
+obj-m += register_filesystem.o
 obj-m += d_path.o
 
 CURRENT_PATH:=$(shell pwd)
