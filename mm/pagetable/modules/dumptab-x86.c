@@ -309,6 +309,10 @@ static int dump_pagetable(struct seq_file *s)
 	if(cr0 & X86_CR0_PG  &&  cr4 & X86_CR4_PAE  &&  ia32_efer & EFER_LME  &&  !(cr4 & X86_CR4_PCIDE)){
 		seq_printf(s, "paging according to Tab 4-12 p. 2783 intel dev manual (March 2017)\n");
 	}else{
+		/**
+		 *	Here
+		 *	2021.11.09 Rong Tao
+		 */
 		seq_printf(s, "unknown paging setup\n");
 		return -EPERM; /*I'm afraid I can't do that*/
 	}
