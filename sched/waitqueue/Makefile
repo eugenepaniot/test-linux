@@ -1,3 +1,4 @@
+obj-m += wait_event_interruptible.o
 obj-m += waitqueue.o
 
 KERNELDIR ?= /lib/modules/$(shell uname -r)/build
