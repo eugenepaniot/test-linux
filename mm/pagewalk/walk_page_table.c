@@ -57,6 +57,8 @@ static struct page *walk_page_table(unsigned long addr)
     if (page)
         printk(KERN_INFO "page frame struct is @ %p", page);
 
+	pte_unmap(ptep);
+
  out:
     return page;
 }
