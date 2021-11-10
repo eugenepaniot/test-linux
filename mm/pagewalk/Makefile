@@ -1,4 +1,5 @@
 obj-m += walk_page_range.o
+obj-m += walk_page_table.o
 
 PWD := $(shell pwd)
 KERNELDIR ?= /lib/modules/$(shell uname -r)/build

@@ -27,13 +27,14 @@ static int __init pagewalktest_init(void)
 {
 	printk("pagewalktest_init.\n");
 
+#if 0
 	struct task_struct *this_task = current;
 
 	/**
 	 *	Undefined, can't use in module/driver
 	 */
 	walk_page_range(this_task->mm, 0, 0, &pagewalktest_ops, NULL);
-
+#endif
 	return 0;
 }
 
