@@ -1,4 +1,5 @@
 obj-m += listvma.o
+obj-m += dump_mm.o
 obj-m += dump_vma.o
 obj-m += listvma-maps.o
 obj-m += find_vma.o
