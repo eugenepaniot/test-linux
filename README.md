@@ -5,8 +5,8 @@ test linux code
 
 # Relate Repos
 
-* [Me](https://gitee.com/rtoax/test-linux)
-* [Me GitHub](TODO)
+* [test-linux(Me)](https://gitee.com/rtoax/test-linux)
+* [GitHub test-linux](https://github.com/Rtoax/test-linux)
 * [Gitee test](https://gitee.com/rtoax/test)
 * [Gitee test-github](https://gitee.com/rtoax/test-github)
 * [GitHub test](https://github.com/Rtoax/test)
