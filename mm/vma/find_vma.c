@@ -17,15 +17,19 @@ module_param(pid, int, 0644);
 
 static struct task_struct* this_task(pid_t PID)
 {
+	struct pid *_pid;
+	struct task_struct *task;
+
 	if(pid <= 0) {
 		return current;
 	}
-    struct pid *pid = find_get_pid(PID);
-    if(!pid) {
+    _pid = find_get_pid(PID);
+    if(!_pid) {
         printk("Not exist PID %d\n", PID);
         return current;
     }
-    struct task_struct *task = pid_task(pid, PIDTYPE_TGID);
+    
+	task = pid_task(_pid, PIDTYPE_TGID);
     if(!task) {
 		return current;
     }
@@ -50,12 +54,13 @@ static void list_myvma(void)
 		 */
 		unsigned long find_addr = (vma->vm_start + vma->vm_end)/2;
 		struct vm_area_struct *_vma = find_vma(mm, find_addr);
+		char filename[256] = {0};
+		char *filep = NULL;
+
 		if(!_vma) {
 			printk(KERN_ERR "Can't find vma %ld\n", find_addr);
 			continue;
 		}
-		char filename[256] = {0};
-		char *filep = NULL;
 		if(_vma->vm_file) {
 			filep = d_path(&_vma->vm_file->f_path, filename, 256);
 		}
