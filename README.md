@@ -2,6 +2,7 @@
 test linux code
 
 > Rong Tao <rongtao@cestc.cn>
+> more about auther see AUTHOR file
 
 # Relate Repos
 
@@ -16,4 +17,12 @@ test linux code
 
 linux >= 5.0, some time 5.14 will successful.
 
+# About
 
+## Links
+
+There are so many LINKs in this repo, so you better clone this repo in linux system, if windows, oops.
+
+## Reference
+
+TODO
