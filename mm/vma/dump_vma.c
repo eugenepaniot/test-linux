@@ -9,6 +9,7 @@
 #include <linux/mm.h>
 #include <linux/mm_types.h>
 #include <linux/sched.h>
+#include <linux/mmdebug.h>
 
 
 static void list_myvma(void)
@@ -33,6 +34,10 @@ static void list_myvma(void)
 			(vma->vm_flags & VM_EXEC)?"x":"-",
 			(vma->vm_flags & VM_SHARED)?"s":"p");
 #else
+		/**
+		 *	when Ubuntu 20.04 5.11.0 `dump_mm` undefined
+		 *	2021.11.13 Rong Tao
+		 */
 		dump_vma(vma);
 #endif	
 	}
