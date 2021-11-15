@@ -22,18 +22,16 @@
 
 MODULE_LICENSE("Dual BSD/GPL");
 
-spinlock_t myspinlock;
-
 static int hello_init(void)
 {
-	printk(KERN_ALERT "tomxue: Hello, world\n");
-    printk(KERN_ALERT "tomxue: NR_SOFTIRQS is %d\n", NR_SOFTIRQS);
+	printk(KERN_ALERT "init: Hello, world\n");
+    printk(KERN_ALERT "init: NR_SOFTIRQS is %d\n", NR_SOFTIRQS);
 	return 0;
 }
 
 static void hello_exit(void)
 {
-	printk(KERN_ALERT "tomxue: Goodbye, cruel world\n");
+	printk(KERN_ALERT "init: Goodbye, cruel world\n");
 }
 
 module_init(hello_init);
