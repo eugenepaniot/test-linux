@@ -43,9 +43,12 @@ irqreturn_t no_action(int cpl, void *dev_id)
 }
 
 
-static int __init rtoax_irq_init(void) {
-    
+static int __init rtoax_irq_init(void)
+{
 	printk(KERN_INFO "request irq %s!\n", name);
+	/**
+	 *	IRQF_SHARED - 共享中断线，在支持共享的中断线上可注册
+	 */
     if (request_irq(irqnum, no_action, IRQF_SHARED, name, &mydev) != 0) {
 	    printk(KERN_ERR "%s: request_irq() failed\n", name);
 		return -1;
@@ -53,7 +56,8 @@ static int __init rtoax_irq_init(void) {
 	return 0;
 }
 
-static void __exit rtoax_irq_cleanup(void) {
+static void __exit rtoax_irq_cleanup(void)
+{
 	printk(KERN_INFO "free irq.\n");
     /*
      *  释放中断
