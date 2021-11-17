@@ -7,40 +7,27 @@
 #include <linux/module.h>
 #include <linux/sysctl.h>
 
-int my_proc_handler(struct ctl_table *tab, int write, void *buffer, 
-					size_t *lenp, loff_t *ppos);
-
-#define SYSCTL_ENTRY(name)				\
+#define SYSCTL_ENTRY(name, pint)		\
 		{						\
 			.procname	= name,			\
+			.data		= pint,	\
 			.maxlen		= sizeof(int),		\
 			.mode		= 0644,			\
-			.proc_handler	= my_proc_handler,	\
+			.proc_handler	= proc_dointvec,	\
 			.extra1		= SYSCTL_ZERO,		\
 			.extra2		= SYSCTL_INT_MAX,	\
 		}
 
+static int rt1 = 100;
+
 struct ctl_table_header *rongtao_header;
-struct ctl_table rongtao = SYSCTL_ENTRY("rongtao");
-
-int my_proc_handler(struct ctl_table *tab, int write, void *buffer, 
-					size_t *lenp, loff_t *ppos)
-{
-	printk("write=%d, buffer=%p\n", write, buffer);
-
-	/**
-	 *	TODO 不成功
-	 */
-	*lenp = sizeof(int);
-	*ppos = 0;
-
-	return 0;
-}
+struct ctl_table rongtao = SYSCTL_ENTRY("rt1", &rt1);
 
 static int __init my_init(void)
 {
 	printk("my module is working..\n");
-
+	printk("check /proc/sys/rongtao/rt1 \n");
+	
 	rongtao_header = register_sysctl("rongtao", &rongtao);
 
 	return 0;
