@@ -1,5 +1,6 @@
 
 obj-m += register_sysctl.o
+obj-m += register_sysctl_table.o
 
 CURRENT_PATH:=$(shell pwd)
 LINUX_KERNEL_PATH:=/lib/modules/`uname -r`/build
