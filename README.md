@@ -13,7 +13,8 @@ test linux code
 * [GitHub test](https://github.com/rtoax/test)
 * [Gitee test](https://gitee.com/rtoax/test)
 * [Gitee test-github](https://gitee.com/rtoax/test-github)
-* [Notes](https://gitee.com/rtoax/notes)
+* [GitHub Notes](https://github.com/rtoax/notes)
+* [Gitee Notes](https://gitee.com/rtoax/notes)
 
 # Linux Version
 
