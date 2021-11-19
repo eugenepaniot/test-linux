@@ -8,10 +8,11 @@ test linux code
 
 * [GitHub test-linux(Me)](https://github.com/Rtoax/test-linux)
 * [Gitee test-linux(Me)](https://gitee.com/rtoax/test-linux)
+* [GitHub test-os](https://github.com/rtoax/test-os)
 * [Gitee test-os](https://gitee.com/rtoax/test-os)
+* [GitHub test](https://github.com/rtoax/test)
 * [Gitee test](https://gitee.com/rtoax/test)
 * [Gitee test-github](https://gitee.com/rtoax/test-github)
-* [GitHub test](https://github.com/Rtoax/test)
 * [Notes](https://gitee.com/rtoax/notes)
 
 # Linux Version
