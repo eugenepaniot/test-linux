@@ -6,9 +6,9 @@ test linux code
 
 # Relate Repos
 
-* [test-linux(Me)](https://gitee.com/rtoax/test-linux)
-* [test-os](https://gitee.com/rtoax/test-os)
-* [GitHub test-linux](https://github.com/Rtoax/test-linux)
+* [GitHub test-linux(Me)](https://github.com/Rtoax/test-linux)
+* [Gitee test-linux(Me)](https://gitee.com/rtoax/test-linux)
+* [Gitee test-os](https://gitee.com/rtoax/test-os)
 * [Gitee test](https://gitee.com/rtoax/test)
 * [Gitee test-github](https://gitee.com/rtoax/test-github)
 * [GitHub test](https://github.com/Rtoax/test)
