@@ -1,3 +1,4 @@
+obj-m += init_mm.o
 obj-m += listvma.o
 obj-m += dump_mm.o
 obj-m += dump_vma.o
