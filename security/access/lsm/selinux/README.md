@@ -7,6 +7,13 @@ SELinux - Security Enhanced Linux
 Security-Enhanced Linux (SELinux) 是在内核中实现的强制访问控制 (MAC) 安全机制。
 SELinux 最初是在 CentOS 4 中引入的，并在后来的 CentOS 版本中得到了显着增强。
 
+# 访问控制
+
+操作系统有两类访问控制：自主访问控制（`DAC`）和强制访问控制（`MAC`）。
+标准Linux安全是一种`DAC`，SELinux为Linux增加了一个灵活的和可配置的的`MAC`。
+
+# SELinux 
+
 configuration: `/etc/selinux/config`
 relate commands: `getenforce`, `setenforce`
 
