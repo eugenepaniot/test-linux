@@ -6,6 +6,8 @@ test linux code
 > You must clone this repo under Linux(UNIX like) system. Because
 > there are lots of symbol links, some file system not support in
 > Windows OS.
+> 
+> In directory `modules` store some API demos.
 
 # Relate Repos
 
