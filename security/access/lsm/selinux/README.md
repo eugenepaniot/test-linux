@@ -9,7 +9,7 @@ SELinux - Security Enhanced Linux
 
 * Security-Enhanced Linux (SELinux) 是在内核中实现的强制访问控制 (MAC) 安全机制。
 * SELinux 最初是在 CentOS 4 中引入的，并在后来的 CentOS 版本中得到了显着增强。
-* 与内核交互数据方式`netlink`
+* 与内核交互数据方式`netlink`, 见`NETLINK_SELINUX`.
 
 # 访问控制
 
