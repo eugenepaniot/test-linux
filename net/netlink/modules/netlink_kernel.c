@@ -1,3 +1,6 @@
+/**
+ *	
+ */
 #include <linux/module.h>
 #include <net/sock.h>
 #include <linux/netlink.h>
@@ -16,7 +19,6 @@ static void hello_nl_recv_msg(struct sk_buff *skb)
 
 	int msg_size;
 	char *msg = "hello, this msg is from kernel";
-	
 
 	printk(KERN_INFO "Entering: %s\n", __FUNCTION__);
 

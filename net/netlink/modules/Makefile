@@ -7,11 +7,11 @@ LINUX_KERNEL_PATH:=/lib/modules/`uname -r`/build
 all:
 	make -C $(LINUX_KERNEL_PATH) M=$(CURRENT_PATH) modules
 
-client:
-	gcc netlink_client2.c -o netlink_client2 -g
-	gcc netlink_client3.c -o netlink_client3 -g
-	gcc netlink_client.c -o netlink_client -g
+user:
+	gcc netlink_user2.c -o netlink_user2 -g
+	gcc netlink_user3.c -o netlink_user3 -g
+	gcc netlink_user.c -o netlink_user -g
 
 clean:
 	make -C $(LINUX_KERNEL_PATH) M=$(CURRENT_PATH) clean
-	rm  -rf netlink_client netlink_client2 netlink_client3
+	rm  -rf netlink_user netlink_user2 netlink_user3
