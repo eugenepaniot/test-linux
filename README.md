@@ -2,7 +2,10 @@
 test linux code
 
 > Rong Tao <rongtao@cestc.cn>
-> more about auther see AUTHOR file
+> more about auther see AUTHOR file.
+> You must clone this repo under Linux(UNIX like) system. Because
+> there are lots of symbol links, some file system not support in
+> Windows OS.
 
 # Relate Repos
 
@@ -24,8 +27,11 @@ linux >= 5.0, some time 5.14 will successful.
 
 ## Links
 
-There are so many LINKs in this repo, so you better clone this repo in linux system, if windows, oops.
+There are so many LINKs in this repo, so you better clone this repo 
+in linux system, if windows, oops.
 
 ## Reference
 
-TODO
+* linux-5.10.13
+* linux-5.14.0
+* linux-5.15.0
