@@ -24,8 +24,7 @@
 #include <sys/socket.h>
 #include <linux/netlink.h>
 
-#define NETLINK_XUX           31       /* testing */  
-#define MAX_PAYLOAD 1024 /* maximum payload size*/
+#include "netlink.h"
 
 struct sockaddr_nl src_addr, dest_addr;
 struct nlmsghdr *nlh = NULL;
@@ -35,7 +34,7 @@ int fd;
 
 int main(int args, char *argv[])
 {
-        fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_XUX);
+        fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_USER);
 
         if (fd < 0) {
                 printf("Error - not support not in kernel");

@@ -7,9 +7,9 @@
 #include <unistd.h>
 #include <errno.h>
 
-#define NETLINK_TEST    31
+#include "netlink.h"
+
 #define MSG_LEN            125
-#define MAX_PLOAD        125
 
 typedef struct _user_msg_info
 {
@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     char *umsg = "hello netlink!!";
 
     /* 创建NETLINK socket */
-    skfd = socket(AF_NETLINK, SOCK_RAW, NETLINK_TEST);
+    skfd = socket(AF_NETLINK, SOCK_RAW, NETLINK_USER);
     if(skfd == -1)
     {
         perror("create socket error\n");
@@ -51,9 +51,9 @@ int main(int argc, char **argv)
     daddr.nl_pid = 0; // to kernel
     daddr.nl_groups = 0;
 
-    nlh = (struct nlmsghdr *)malloc(NLMSG_SPACE(MAX_PLOAD));
+    nlh = (struct nlmsghdr *)malloc(NLMSG_SPACE(MAX_PAYLOAD));
     memset(nlh, 0, sizeof(struct nlmsghdr));
-    nlh->nlmsg_len = NLMSG_SPACE(MAX_PLOAD);
+    nlh->nlmsg_len = NLMSG_SPACE(MAX_PAYLOAD);
     nlh->nlmsg_flags = 0;
     nlh->nlmsg_type = 0;
     nlh->nlmsg_seq = 0;

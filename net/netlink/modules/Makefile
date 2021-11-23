@@ -8,10 +8,10 @@ all:
 	make -C $(LINUX_KERNEL_PATH) M=$(CURRENT_PATH) modules
 
 user:
-	gcc netlink_user2.c -o netlink_user2 -g
-	gcc netlink_user3.c -o netlink_user3 -g
-	gcc netlink_user.c -o netlink_user -g
+	gcc netlink_user2.c -o user2 -g
+	gcc netlink_user3.c -o user3 -g
+	gcc netlink_user.c -o user -g
 
 clean:
 	make -C $(LINUX_KERNEL_PATH) M=$(CURRENT_PATH) clean
-	rm  -rf netlink_user netlink_user2 netlink_user3
+	rm  -rf user user2 user3

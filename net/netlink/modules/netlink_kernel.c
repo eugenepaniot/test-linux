@@ -1,12 +1,12 @@
 /**
- *	
+ *	File netlink_kernel.c
  */
 #include <linux/module.h>
 #include <net/sock.h>
 #include <linux/netlink.h>
 #include <linux/skbuff.h>
 
-#define NETLINK_USER 31     //the user defined channel, the key factor
+#include "netlink.h"
 
 struct sock *nl_sk = NULL;
 
@@ -23,8 +23,12 @@ static void hello_nl_recv_msg(struct sk_buff *skb)
 	printk(KERN_INFO "Entering: %s\n", __FUNCTION__);
 
 	msg_size = strlen(msg);
+	
 	//for receiving...
-	nlh = (struct nlmsghdr*)skb->data;    //nlh message comes from skb's data... (sk_buff: unsigned char *data)
+	//nlh message comes from skb's data... 
+	//(sk_buff: unsigned char *data)
+	nlh = (struct nlmsghdr*)skb->data;
+	
 	/*  
     static inline void *nlmsg_data(const struct nlmsghdr *nlh)
 	{
@@ -35,7 +39,8 @@ static void hello_nl_recv_msg(struct sk_buff *skb)
 	printk(KERN_INFO "Netlink received msg payload: %s\n",(char*)nlmsg_data(nlh));
 
 	//for sending...
-	pid = nlh->nlmsg_pid; // Sending process port ID, will send new message back to the 'user space sender'
+	//Sending process port ID, will send new message back to the 'user space sender'
+	pid = nlh->nlmsg_pid; 
 
     /**
     * nlmsg_new - Allocate a new netlink message
@@ -59,7 +64,6 @@ static void hello_nl_recv_msg(struct sk_buff *skb)
     }
     #define NLMSG_HDRLEN     ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))
     */
-
 	skb_out = nlmsg_new(msg_size, 0);    //nlmsg_new - Allocate a new netlink message: skb_out
 
 	if(!skb_out)
@@ -121,7 +125,8 @@ static int __init hello_init(void)
 	//struct net init_net; defined in net_namespace.c
 	//unit=NETLINK_USER: refer to some kernel examples
 	//groups = 0, unicast
-	//nl_sk: global sock, will be sent to hello_nl_recv_msg as argument (nl_sk ->...-> skb) and return from below func, by Tom Xue, not totally verified
+	//nl_sk: global sock, will be sent to hello_nl_recv_msg as argument (nl_sk ->...-> skb) 
+	//	and return from below func, by Tom Xue, not totally verified
 	struct netlink_kernel_cfg cfg = {
 		.input = hello_nl_recv_msg,//该函数原型可参考内核代码，其他参数默认即可
 	};
