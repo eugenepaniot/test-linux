@@ -1,11 +1,15 @@
 SELinux - Security Enhanced Linux
 =============
 
+# Links
+
 * [https://wiki.centos.org/HowTos/SELinux](https://wiki.centos.org/HowTos/SELinux)
 
+# 介绍
 
-Security-Enhanced Linux (SELinux) 是在内核中实现的强制访问控制 (MAC) 安全机制。
-SELinux 最初是在 CentOS 4 中引入的，并在后来的 CentOS 版本中得到了显着增强。
+* Security-Enhanced Linux (SELinux) 是在内核中实现的强制访问控制 (MAC) 安全机制。
+* SELinux 最初是在 CentOS 4 中引入的，并在后来的 CentOS 版本中得到了显着增强。
+* 与内核交互数据方式`netlink`
 
 # 访问控制
 
