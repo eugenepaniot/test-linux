@@ -32,6 +32,11 @@ linux >= 5.0, some time 5.14 will successful.
 There are so many LINKs in this repo, so you better clone this repo 
 in linux system, if windows, oops.
 
+## Ignore
+
+This repo ignore `.txt` file(check `.gitignore`). If you want to write 
+a text `Note`, use `.md`(`markdown`) instead.
+
 ## Reference
 
 * linux-5.10.13
