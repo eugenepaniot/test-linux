@@ -35,3 +35,10 @@ SELinux 策略有两种：
 
 1. Targeted目标 — 只有目标网络进程（dhcpd，httpd，named，nscd，ntpd，portmap，snmpd，squid，以及 syslogd）受保护
 2. Strict严格 — 对所有进程完全的 SELinux 保护
+
+# 相关命令
+
+```bash
+id -Z
+ls -Z
+```
