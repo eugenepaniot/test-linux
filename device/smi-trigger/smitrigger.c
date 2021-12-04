@@ -90,6 +90,9 @@ static ssize_t device_read(struct file *filp,
 static ssize_t device_write(struct file *filp, const char *buff, size_t len,
                             loff_t *off) {
   printk(KERN_ALERT "Smitrigger write. Software SMI gets triggered.\n");
+  /**
+   *	out to port
+   */
   asm volatile("mov $0x0, %eax");
   asm volatile("out %eax, $0xb2");
   return len;
