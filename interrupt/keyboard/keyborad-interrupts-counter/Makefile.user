@@ -1,0 +1,6 @@
+.PHONY : clean
+
+all:
+	gcc key-handler-user.c -o key-handler-user.out -std=c11 -I.
+clean:
+	-rm key-handler-user.out
