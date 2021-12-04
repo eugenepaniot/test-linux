@@ -118,6 +118,9 @@ long device_ioctl(struct file *file, unsigned int ioctl_num, unsigned long ioctl
     return 0;
 }
 
+/**
+ *	Kernel version cause API not exist. Rong Tao 2021.11.04
+ */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
 static inline void getnstimeofday(struct timespec64 *ts)
 {
