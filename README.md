@@ -8,6 +8,7 @@ test linux code
 > Windows OS.
 > 
 > In directory `modules` store some API demos.
+> You'd better rename any of folder and file's name.
 
 # Relate Repos
 
