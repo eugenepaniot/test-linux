@@ -1,4 +1,4 @@
-obj-m += idt.o
+obj-m += proc-idt.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules

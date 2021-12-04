@@ -33,6 +33,7 @@ static gate_desc *idt;
 
 static void idt_setup(struct seq_file *sf)
 {
+	/* use register `sidt` get idt */
 	store_idt(&dtr); // This internally uses assembly instruction 'sidt'
 	                 // to store the contents of the IDTR register in dtr.
 	#ifdef CONFIG_X86_64
