@@ -2,6 +2,8 @@
 # 修改 启动的内核
 # 荣涛 2021年2月22日
 
+set -euo pipefail
+
 function __rt_centos7_grub_kernel_select {
 
 # root

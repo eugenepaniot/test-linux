@@ -1,5 +1,6 @@
 #!/bin/bash 
 
+set -euo pipefail
 # yum -y install setools-console
 
 WWW_HTML=/var/www/html 

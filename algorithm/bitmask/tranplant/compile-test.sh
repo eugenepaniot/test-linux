@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -euo pipefail
 rm -f *.out
 
 for file in `ls test-*`

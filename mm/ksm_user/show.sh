@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -euo pipefail
 echo "/sys/kernel/mm/ksm/pages_sharing"
 cat /sys/kernel/mm/ksm/pages_sharing
 

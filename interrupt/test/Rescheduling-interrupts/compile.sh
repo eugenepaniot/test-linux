@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 SRCS=`ls demo-*.c`
 
 for src in $SRCS

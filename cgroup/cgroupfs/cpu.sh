@@ -4,6 +4,8 @@
 # Need `libcgroup-tools`, you can install with
 # $ sudo yum install libcgroup-tools
 
+set -euo pipefail
+
 # create cgroup CPU
 # will create cgroupfs: /sys/fs/cgroup/cpu/rongtao/
 cgcreate -g cpu:rongtao
