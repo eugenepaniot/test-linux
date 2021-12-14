@@ -18,7 +18,14 @@ MODULE_LICENSE("GPL");
 static void dump_task(struct task_struct *p)
 {
 #if 1
-	printk("pid:%d; state:%lx; prio:%d; static_prio:%d; parent'pid:%d; count:%d; umask:%d;",
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0)
+# define Sfmt "%x"
+#else
+# define Sfmt "%lx"
+#endif 
+
+	printk("pid:%d; state:"Sfmt"; prio:%d; static_prio:%d; parent'pid:%d; count:%d; umask:%d;",
 		p->pid,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0)
 		p->__state,

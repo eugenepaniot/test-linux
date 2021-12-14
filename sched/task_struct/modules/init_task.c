@@ -23,7 +23,13 @@ static int __init print_pid(void)
 		p = list_entry(pos,struct task_struct,tasks);
 		count++;
 		printk("\n\n");
-		printk("pid:%d; state:%lx; prio:%d; static_prio:%d; parent'pid:%d; count:%d; umask:%d;",
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0)
+# define Sfmt "%x"
+#else
+# define Sfmt "%lx"
+#endif 
+		printk("pid:%d; state:"Sfmt"; prio:%d; static_prio:%d; parent'pid:%d; count:%d; umask:%d;",
 			p->pid,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0)
 			p->__state,
