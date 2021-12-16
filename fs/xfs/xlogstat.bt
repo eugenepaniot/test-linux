@@ -1,0 +1,27 @@
+#!/usr/bin/env bpftrace
+/**
+ *	Tracing XFS xlog
+ *	Rong Tao 2021.12.16
+ */
+
+BEGIN
+{
+	printf("Tracing XFS xlog calls... Hit Ctrl-C to end.\n");
+}
+
+kprobe:xlog_*
+{
+	@[func] = count();
+}
+
+interval:s:1
+{
+	time();
+	print(@);
+	clear(@);
+}
+
+END 
+{
+	clear(@);
+}

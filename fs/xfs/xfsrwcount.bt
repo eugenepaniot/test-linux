@@ -1,0 +1,28 @@
+#!/usr/bin/env bpftrace
+/*
+ * xfsrwcount	Count XFS calls ("xfs_read/write*").
+ *		For Linux, uses bpftrace and eBPF.
+ *
+ * Written as a basic example of counting kernel functions.
+ *
+ * USAGE: xfsrwcount.bt
+ *
+ * This is a bpftrace version of the bcc tool of the same name.
+ *
+ * Copyright 2021 CESTC, Inc.
+ * Licensed under the Apache License, Version 2.0 (the "License")
+ *
+ * 12-Dec-2021	Rong Tao	Created this.
+ */
+
+BEGIN
+{
+	printf("Tracing XFS calls... Hit Ctrl-C to end.\n");
+
+}
+
+kprobe:xfs_read*,
+kprobe:xfs_write*
+{
+	@[func] = count();
+}
