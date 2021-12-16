@@ -1,0 +1,29 @@
+#!/usr/bin/env bpftrace 
+/**
+ *	Tracing VirtIO Balloon 
+ *
+ *	Rong Tao
+ */
+
+BEGIN
+{
+	printf("Tracing VirtIO Balloon. Hit Ctrl-C exit.\n");
+}
+
+kprobe:balloon*
+{
+	@[func] = count();
+}
+
+interval:s:1
+{
+	time();
+	print(@);
+	clear(@);
+}
+
+END
+{
+	clear(@);
+	printf("Bye.\n");
+}
