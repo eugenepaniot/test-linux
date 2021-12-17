@@ -1,0 +1,68 @@
+#!/usr/bin/env bpftrace
+/**
+ *	Tracing selinux_socket_xxxx() histogram SELinux function
+ *	Rong Tao 2021.12.17
+ */
+#include <linux/kernel.h>
+#include <linux/syslog.h>
+
+BEGIN
+{
+	printf("Tracing selinux_socket_xxxx() SELinux function latency histogram... Hit Ctrl-C to end.\n");
+}
+
+kprobe:selinux_socket_accept,
+kprobe:selinux_socket_bind,
+kprobe:selinux_socket_connect,
+kprobe:selinux_socket_create,
+kprobe:selinux_socket_getpeername,
+kprobe:selinux_socket_getpeersec_dgram,
+kprobe:selinux_socket_getpeersec_stream,
+kprobe:selinux_socket_getsockname,
+kprobe:selinux_socket_getsockopt,
+kprobe:selinux_socket_listen,
+kprobe:selinux_socket_post_create,
+kprobe:selinux_socket_recvmsg,
+kprobe:selinux_socket_sendmsg,
+kprobe:selinux_socket_setsockopt,
+kprobe:selinux_socket_shutdown,
+kprobe:selinux_socket_sock_rcv_skb,
+kprobe:selinux_socket_socketpair,
+kprobe:selinux_socket_unix_may_send,
+kprobe:selinux_socket_unix_stream_connect
+{
+	@start[tid] = nsecs;
+	@name[tid] = func;
+}
+
+kretprobe:selinux_socket_accept,
+kretprobe:selinux_socket_bind,
+kretprobe:selinux_socket_connect,
+kretprobe:selinux_socket_create,
+kretprobe:selinux_socket_getpeername,
+kretprobe:selinux_socket_getpeersec_dgram,
+kretprobe:selinux_socket_getpeersec_stream,
+kretprobe:selinux_socket_getsockname,
+kretprobe:selinux_socket_getsockopt,
+kretprobe:selinux_socket_listen,
+kretprobe:selinux_socket_post_create,
+kretprobe:selinux_socket_recvmsg,
+kretprobe:selinux_socket_sendmsg,
+kretprobe:selinux_socket_setsockopt,
+kretprobe:selinux_socket_shutdown,
+kretprobe:selinux_socket_sock_rcv_skb,
+kretprobe:selinux_socket_socketpair,
+kretprobe:selinux_socket_unix_may_send,
+kretprobe:selinux_socket_unix_stream_connect
+/@start[tid]/
+{
+	@us[@name[tid]] = hist((nsecs - @start[tid]) / 1000);
+    delete(@start[tid]);
+    delete(@name[tid]);
+}
+
+END 
+{
+	clear(@start);
+	clear(@name);
+}
