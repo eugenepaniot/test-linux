@@ -1,0 +1,39 @@
+#!/usr/bin/env bpftrace
+/**
+ *	Tracing selinux_syslog() SELinux function
+ *	Rong Tao 2021.12.17
+ */
+#include <linux/kernel.h>
+#include <linux/syslog.h>
+
+BEGIN
+{
+	printf("Tracing selinux_syslog() SELinux function calls... Hit Ctrl-C to end.\n");
+	printf("%-9s %-6s %-16s %s\n", "TIME", "PID", "COMM", "TYPE");
+
+	// include/linux/syslog.h
+	@syslog_type[SYSLOG_ACTION_CLOSE] = "CLOSE";
+	@syslog_type[SYSLOG_ACTION_OPEN] = "OPEN";
+	@syslog_type[SYSLOG_ACTION_READ] = "READ";
+	@syslog_type[SYSLOG_ACTION_READ_ALL] = "READ_ALL";
+	@syslog_type[SYSLOG_ACTION_READ_CLEAR] = "READ_CLEAR";
+	@syslog_type[SYSLOG_ACTION_CLEAR] = "CLEAR";
+	@syslog_type[SYSLOG_ACTION_CONSOLE_OFF] = "CONSOLE_OFF";
+	@syslog_type[SYSLOG_ACTION_CONSOLE_ON] = "CONSOLE_ON";
+	@syslog_type[SYSLOG_ACTION_CONSOLE_LEVEL] = "CONSOLE_LEVEL";
+	@syslog_type[SYSLOG_ACTION_SIZE_UNREAD] = "UNREAD";
+	@syslog_type[SYSLOG_ACTION_SIZE_BUFFER] = "BUFFER";
+}
+
+kprobe:selinux_syslog
+{
+	$type = arg0;
+	time("%H:%M:%S  ");
+	printf("%-6d %-16s %s\n", pid, comm, @syslog_type[$type]);
+}
+
+END 
+{
+	clear(@syslog_type);
+	printf("Bye.\n");
+}
