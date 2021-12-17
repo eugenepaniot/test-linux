@@ -1,0 +1,37 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+    printf("Tracing sync syscalls... Hit Ctrl-C to end.\n");
+    printf("%-9s %-6s %-16s %-16s %-16s %-16s\n", 
+		   "TIME", "PID", "COMM", "TYPE", "FROM", "TO");
+}
+
+tracepoint:syscalls:sys_enter_mount
+{
+	$dev_name = args->dev_name;
+	$dir_name = args->dir_name;
+	$type = args->type;
+
+	@start[tid] = nsecs;
+    @name[tid] = "mount(2)";
+
+	time("%H:%M:%S  ");
+    printf("%-6d %-16s %-16s %-16s %-16s\n", 
+		   pid, comm, str($type), str($dev_name), str($dir_name));
+}
+
+tracepoint:syscalls:sys_exit_mount
+/@start[tid]/
+{
+    @us[@name[tid]] = hist((nsecs - @start[tid]) / 1000);
+    delete(@start[tid]);
+    delete(@name[tid]);
+}
+
+END
+{
+    clear(@start);
+    clear(@name);
+	printf("Bye.\n");
+}
