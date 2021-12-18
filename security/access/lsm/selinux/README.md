@@ -10,6 +10,19 @@ SELinux - Security Enhanced Linux
 * Security-Enhanced Linux (SELinux) 是在内核中实现的强制访问控制 (MAC) 安全机制。
 * SELinux 最初是在 CentOS 4 中引入的，并在后来的 CentOS 版本中得到了显着增强。
 * 与内核交互数据方式`netlink`, 见`NETLINK_SELINUX`.
+* access vector cache (AVC)
+
+# Architecture
+
+## [How does SELinux work?](https://www.redhat.com/en/topics/linux/what-is-selinux)
+
+SELinux defines access controls for the applications, processes, and files on a system. It uses security policies, which are a set of rules that tell SELinux what can or can’t be accessed, to enforce the access allowed by a policy. 
+
+When an application or process, known as a subject, makes a request to access an object, like a file, SELinux checks with an access vector cache (AVC), where permissions are cached for subjects and objects.
+
+If SELinux is unable to make a decision about access based on the cached permissions, it sends the request to the security server. The security server checks for the security context of the app or process and the file. Security context is applied from the SELinux policy database. Permission is then granted or denied. 
+
+If permission is denied, an "avc: denied" message will be available in /var/log.messages.
 
 # 访问控制
 
