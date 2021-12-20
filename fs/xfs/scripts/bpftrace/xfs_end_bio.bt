@@ -1,0 +1,18 @@
+#!/usr/bin/env bpftrace
+BEGIN
+{
+	printf("Tracing XFS end bio calls... Hit Ctrl-C to end.\n");
+
+}
+
+kprobe:xfs_prepare_ioend,
+kprobe:xfs_end_io,
+kprobe:xfs_end_bio
+{
+	@[func] = count();
+	printf("%-8d %-16s %-16s \n", pid, comm, probe);
+}
+
+END{
+	printf("Bye.\n");
+}

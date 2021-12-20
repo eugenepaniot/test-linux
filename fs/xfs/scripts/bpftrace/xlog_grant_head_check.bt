@@ -1,51 +1,37 @@
 #!/usr/bin/env bpftrace
-/**
- *	Tracing XFS xlog_grant_head_check
- *	Rong Tao 2021.12.16
- * 
- *   #0 [ffff00002d4af700] __switch_to at ffff57afe6e07810
- *   #1 [ffff00002d4af720] __schedule at ffff57afe77d2af8
- *   #2 [ffff00002d4af7b0] schedule at ffff57afe77d30a4
- *   #3 [ffff00002d4af7d0] xlog_grant_head_wait at ffff57af44861748 [xfs]
- *   #4 [ffff00002d4af820] xlog_grant_head_check at ffff57af44861a10 [xfs]
- *   #5 [ffff00002d4af870] xfs_log_reserve at ffff57af44865c1c [xfs]
- *   #6 [ffff00002d4af8e0] xfs_trans_reserve at ffff57af4485ea18 [xfs]
- *   #7 [ffff00002d4af930] xfs_trans_alloc at ffff57af44860350 [xfs]
- */
+
+#include <linux/stddef.h>
+#include <linux/types.h>
+#include <linux/list.h>
+#include <linux/cache.h>
+
+struct xlog_grant_head {
+	spinlock_t		____cacheline_aligned_in_smp lock ;
+	struct list_head	waiters;
+	atomic64_t		grant;
+};
 
 BEGIN
 {
-	printf("Tracing XFS xlog calls... Hit Ctrl-C to end.\n");
-	printf("%-8s %-8s %-16s ", "TIME", "PID", "COMM");
-	printf("%-16s %-16s %-16s\n", "NEED", "FREE", "WAIT");
+	printf("Tracing XFS calls... Hit Ctrl-C to end.\n");
+
 }
 
 kprobe:xlog_grant_head_check
 {
-	$pneed_bytes = arg3;
-	
-	time("%H:%M:%S ");
-    printf("%-8d %-16s ", pid, comm);
-	printf("%-16d %-16s %-16s\n", *$pneed_bytes, "-", "-");
+	@[func] = count();
+
+	$grant_head = (struct xlog_grant_head *)arg1;
+	$waiters = $grant_head->waiters;
+
+	/**
+	 *	if $waiters.prev == $waiters.next, means $waiters is empty.
+	 */
+	printf("%-8d %-16s %-16s (%p %p %p)\n", pid, comm, probe, $waiters.prev, $waiters.next, $grant_head);
+	printf("%s\n", kstack);
 }
 
-kprobe:xlog_grant_head_wake
+END
 {
-	$pfree_bytes = arg2;
-	
-	time("%H:%M:%S ");
-    printf("%-8d %-16s ", pid, comm);
-	printf("%-16s %-16d %-16s\n", "-", *$pfree_bytes, "-");
-}
-
-kprobe:xlog_grant_head_wait
-{
-	$pneed_bytes = arg3;
-	
-	time("%H:%M:%S ");
-    printf("%-8d %-16s ", pid, comm);
-	printf("%-16s %-16s %-16d\n", "-", "-", $pneed_bytes);
-}
-END 
-{
+	printf("Bye.\n");
 }
