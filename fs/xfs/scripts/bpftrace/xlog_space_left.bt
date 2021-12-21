@@ -1,0 +1,25 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+	printf("Tracing XFS calls... Hit Ctrl-C to end.\n");
+	printf("%-6s %-16s \n", "PID", "COMM");
+}
+
+kprobe:xlog_space_left
+{
+	@[func] = count();
+
+	printf("%s\n", kstack);
+}
+kretprobe:xlog_space_left
+{
+	$free_bytes = retval;
+
+	printf("%-6d %-16s %-16s %-6d\n", pid, comm, probe, $free_bytes);
+}
+
+END
+{
+	printf("Bye.\n");
+}
