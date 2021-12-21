@@ -1,0 +1,20 @@
+#!/usr/bin/env bpftrace
+BEGIN
+{
+	printf("Tracing XFS calls... Hit Ctrl-C to end.\n");
+
+}
+
+//kprobe:xfs_setfilesize_ioend,
+kprobe:xfs_setfilesize
+{
+	@[func] = count();
+
+	printf("%-8d %-16s %-16s \n", pid, comm, probe);
+	//printf("%s\n", kstack);
+}
+
+END
+{
+	printf("Bye.\n");
+}
