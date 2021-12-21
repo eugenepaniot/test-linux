@@ -25,6 +25,18 @@ test linux code
 # Linux Version
 
 linux >= 5.0, some time 5.14 will successful.
+You can use the following macro
+
+```c
+#include <linux/version.h>
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+	[...]
+#else
+	[...]
+#endif
+```
+
 
 # About
 
