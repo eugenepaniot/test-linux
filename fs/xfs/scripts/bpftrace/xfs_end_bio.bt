@@ -11,6 +11,8 @@ kprobe:xfs_end_bio
 {
 	@[func] = count();
 	printf("%-8d %-16s %-16s \n", pid, comm, probe);
+
+	printf("%s\n", kstack);
 }
 
 END{
