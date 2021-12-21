@@ -1,0 +1,21 @@
+#!/usr/bin/env bpftrace
+BEGIN
+{
+	printf("Tracing XFS calls... Hit Ctrl-C to end.\n");
+
+}
+
+/**
+ *	rename or write syscall will call this function
+ */
+tracepoint:xfs:xfs_trans_commit_items
+{
+
+	printf("%-8d %-16s %-16s \n", pid, comm, probe);
+	printf("%s\n", kstack);
+}
+
+END
+{
+	printf("Bye.\n");
+}

@@ -5,8 +5,6 @@ BEGIN
 
 }
 
-kprobe:xfs_prepare_ioend,
-kprobe:xfs_end_io,
 kprobe:xfs_end_bio
 {
 	@[func] = count();

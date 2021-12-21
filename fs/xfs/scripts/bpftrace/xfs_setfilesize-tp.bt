@@ -1,0 +1,25 @@
+#!/usr/bin/env bpftrace
+
+/**
+ *	fs/xfs/xfs_linux.h 
+ *
+ *	See https://github.com/iovisor/bpftrace/issues/2094
+ */
+//typedef unsigned long long	xfs_ino_t;
+
+BEGIN
+{
+	printf("Tracing XFS calls... Hit Ctrl-C to end.\n");
+}
+
+tracepoint:xfs:xfs_setfilesize
+{
+	$offset = args->offset;
+	$size = args->size;
+	printf("%-8d %-16s %-8d %-8d \n", pid, comm, $offset, $size);
+}
+
+END
+{
+	printf("Bye.\n");
+}
