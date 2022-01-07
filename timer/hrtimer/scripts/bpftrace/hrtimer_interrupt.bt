@@ -1,0 +1,46 @@
+#!/usr/bin/env bpftrace
+/**
+ *	File: hrtimer_interrupt.bt
+ *	Author: Rong Tao
+ */
+#include <linux/clockchips.h>
+#include <linux/sched.h>
+
+BEGIN
+{
+	printf("Tracing hrtimer_interrupt, ctrl-C to end.\n");
+}
+
+kprobe:hrtimer_interrupt
+{
+	$dev = (struct clock_event_device*)arg0;
+
+	@irqcount[str($dev->name)] = count();
+	@start[tid] = nsecs;
+	@name[tid] = str($dev->name);
+}
+
+kretprobe:hrtimer_interrupt
+/@start[tid]/
+{
+	//$task = (struct task_struct *)curtask;
+	//printf("%s, %d, %d\n", $task->comm, tid, $task->pid);
+	//@us_task[$task->comm] = hist((nsecs - @start[tid]) / 1000);
+	@us_all[@name[tid]] = hist((nsecs - @start[tid]) / 1000);
+	delete(@start[tid]);
+}
+
+interval:s:1
+{
+	time();
+	print(@irqcount);
+	clear(@irqcount);
+}
+
+END
+{
+	clear(@irqcount);
+	clear(@name);
+	clear(@start);
+	printf("Bye.\n");
+}
