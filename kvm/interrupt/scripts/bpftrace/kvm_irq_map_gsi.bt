@@ -1,0 +1,34 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+	printf("Tracing KVM irq, ctrl-C to end.\n");
+}
+
+kprobe:kvm_irq_map_gsi
+{
+	/**
+	 *  One of stack like:
+	 *  -------------------------------------
+	 *	kstack 
+	 *	     kvm_irq_map_gsi+1
+	 *	     irqfd_update+155
+	 *	     kvm_irq_routing_update+115
+	 *	     kvm_set_irq_routing+1392
+	 *	     kvm_vm_ioctl+2690
+	 *	     __x64_sys_ioctl+293
+	 *	     do_syscall_64+55
+	 *	     entry_SYSCALL_64_after_hwframe+68
+	 *	
+	 *	ustack 
+	 *	     ioctl+11
+	 *	     0x100000000
+	 */
+	printf("kstack %s\n", kstack);
+	printf("ustack %s\n", ustack);
+}
+
+END
+{
+	printf("Bye.\n");
+}
