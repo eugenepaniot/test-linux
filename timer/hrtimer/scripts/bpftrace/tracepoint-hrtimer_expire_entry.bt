@@ -1,0 +1,29 @@
+#!/usr/bin/env bpftrace
+/**
+ *	hrtimer_expire_entry and exit
+ *
+ *	Rong Tao 2022-01-08
+ */
+
+BEGIN
+{
+	printf("Tracing hrtimer callback entry and exit. Hit Ctrl-C to end.\n");
+}
+
+tracepoint:timer:hrtimer_expire_entry
+{
+	@start[tid] = nsecs;
+}
+
+tracepoint:timer:hrtimer_expire_exit
+/@start[tid]/
+{
+	@latency[comm] = hist((nsecs - @start[tid]) / 1000);
+	clear(@start);
+}
+
+END
+{
+	clear(@start);
+	printf("Bye\n");
+}
