@@ -1,0 +1,31 @@
+#!/usr/bin/env bpftrace
+/**
+ *	File: hrtimer_run_queues.bt
+ *	Author: Rong Tao
+ */
+#include <linux/clockchips.h>
+#include <linux/sched.h>
+
+BEGIN
+{
+	printf("Tracing hrtimer_run_queues, ctrl-C to end.\n");
+
+	//printf("%-8s %-16s\n", "PID", "COMM");
+}
+
+kprobe:__hrtimer_run_queues
+{
+	//printf("%-8d %-16s\n", pid, comm);
+	@commcount[comm] = count();
+}
+
+interval:s:1
+{
+	time();
+	print(@commcount);
+}
+
+END
+{
+	printf("Bye.\n");
+}
