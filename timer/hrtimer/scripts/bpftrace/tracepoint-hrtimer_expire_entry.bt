@@ -12,6 +12,8 @@ BEGIN
 
 tracepoint:timer:hrtimer_expire_entry
 {
+	//$func = args->function;
+	//printf("function = %p\n", $func);
 	@start[tid] = nsecs;
 }
 
