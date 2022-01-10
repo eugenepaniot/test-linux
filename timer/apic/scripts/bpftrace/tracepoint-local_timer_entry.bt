@@ -17,6 +17,11 @@ tracepoint:irq_vectors:local_timer_entry
 	@start[tid] = nsecs;
 }
 
+interval:s:1
+{
+	print(@irqcount);
+}
+
 tracepoint:irq_vectors:local_timer_exit
 /@start[tid]/
 {
