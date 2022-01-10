@@ -15,11 +15,16 @@ tracepoint:timer:hrtimer_expire_entry
 	//$func = args->function;
 	//printf("function = %p\n", $func);
 	@start[tid] = nsecs;
-	@irqcount[tid] = count();
+	@timercount[comm] = count();
+}
+tracepoint:irq_vectors:local_timer_entry
+{
+	@irqcount[comm] = count();
 }
 
 interval:s:1
 {
+	print(@timercount);
 	print(@irqcount);
 }
 
