@@ -1,0 +1,31 @@
+#!/usr/bin/env bpftrace
+/**
+ *	call_function_entry and exit
+ *
+ *	Rong Tao 2022-01-10
+ */
+
+BEGIN
+{
+	printf("Tracing call function interrupt entry and exit. Hit Ctrl-C to end.\n");
+}
+
+tracepoint:irq_vectors:call_function_entry
+{
+	$vector = args->vector;
+	@irqcount[$vector] = count();
+	@start[tid] = nsecs;
+}
+
+tracepoint:irq_vectors:call_function_exit
+/@start[tid]/
+{
+	@latency[comm] = hist((nsecs - @start[tid]) / 1000);
+	clear(@start);
+}
+
+END
+{
+	clear(@start);
+	printf("Bye\n");
+}
