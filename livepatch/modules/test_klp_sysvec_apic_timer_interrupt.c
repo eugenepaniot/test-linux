@@ -52,6 +52,11 @@
 #include <asm/intel-family.h>
 #include <asm/irq_regs.h>
 
+void local_apic_timer_interrupt(void)
+{
+	printk(KERN_INFO "timer irq.\n");
+}
+
 DEFINE_IDTENTRY_SYSVEC(livepatch_sysvec_apic_timer_interrupt)
 {
 	struct pt_regs *old_regs = set_irq_regs(regs);
