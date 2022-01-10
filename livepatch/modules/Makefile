@@ -8,6 +8,7 @@ obj-m += test_klp_shadow_vars.o
 obj-m += test_klp_state2.o
 obj-m += test_klp_state3.o
 obj-m += test_klp_state.o
+obj-m += test_klp_sysvec_apic_timer_interrupt.o
 
 all:
 		make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
