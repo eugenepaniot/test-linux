@@ -52,29 +52,49 @@
 #include <asm/intel-family.h>
 #include <asm/irq_regs.h>
 
-void local_apic_timer_interrupt(void)
-{
-	printk(KERN_INFO "timer irq.\n");
-}
+/**
+ *	Failed, 这些变量在源码中已经有了，并且该文件编译不通过
+ */
+#define LAPIC_CAL_LOOPS		(HZ/10)
 
-DEFINE_IDTENTRY_SYSVEC(livepatch_sysvec_apic_timer_interrupt)
-{
-	struct pt_regs *old_regs = set_irq_regs(regs);
+static __initdata int lapic_cal_loops = -1;
+static __initdata long lapic_cal_t1, lapic_cal_t2;
+static __initdata unsigned long long lapic_cal_tsc1, lapic_cal_tsc2;
+static __initdata unsigned long lapic_cal_pm1, lapic_cal_pm2;
+static __initdata unsigned long lapic_cal_j1, lapic_cal_j2;
 
-	ack_APIC_irq();
-	trace_local_timer_entry(LOCAL_TIMER_VECTOR);
-	/**
-	 *	not define
-	 */
-	local_apic_timer_interrupt();
-	trace_local_timer_exit(LOCAL_TIMER_VECTOR);
-	set_irq_regs(old_regs);
+static void __init livepatch_lapic_cal_handler(struct clock_event_device *dev)
+{
+	unsigned long long tsc = 0;
+	long tapic = apic_read(APIC_TMCCT);
+	unsigned long pm = acpi_pm_read_early();
+
+	if (boot_cpu_has(X86_FEATURE_TSC))
+		tsc = rdtsc();
+
+	switch (lapic_cal_loops++) {
+	case 0:
+		lapic_cal_t1 = tapic;
+		lapic_cal_tsc1 = tsc;
+		lapic_cal_pm1 = pm;
+		lapic_cal_j1 = jiffies;
+		break;
+
+	case LAPIC_CAL_LOOPS:
+		lapic_cal_t2 = tapic;
+		lapic_cal_tsc2 = tsc;
+		if (pm < lapic_cal_pm1)
+			pm += ACPI_PM_OVRRUN;
+		lapic_cal_pm2 = pm;
+		lapic_cal_j2 = jiffies;
+		break;
+	}
 }
 
 static struct klp_func funcs[] = {
 	{
-		.old_name = "sysvec_apic_timer_interrupt",
-		.new_func = livepatch_sysvec_apic_timer_interrupt,
+		.old_name = "lapic_cal_handler",
+		.new_func = livepatch_lapic_cal_handler
 	}, { }
 };
 

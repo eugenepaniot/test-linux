@@ -1,1 +1,2 @@
 test_klp_sysvec_apic_timer_interrupt.c Failed
+test_klp_lapic_cal_handler.c Failed
