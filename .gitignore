@@ -68,3 +68,6 @@ modules.order
 
 # text
 *.txt
+
+# vim temp swap file
+*.swp
