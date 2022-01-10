@@ -1,0 +1,31 @@
+#!/usr/bin/env bpftrace
+/**
+ *	local_timer_entry and exit
+ *
+ *	Rong Tao 2022-01-10
+ */
+
+BEGIN
+{
+	printf("Tracing local timer interrupt entry and exit. Hit Ctrl-C to end.\n");
+}
+
+tracepoint:irq_vectors:local_timer_entry
+{
+	$vector = args->vector;
+	@irqcount[$vector] = count();
+	@start[tid] = nsecs;
+}
+
+tracepoint:irq_vectors:local_timer_exit
+/@start[tid]/
+{
+	@latency[comm] = hist((nsecs - @start[tid]) / 1000);
+	clear(@start);
+}
+
+END
+{
+	clear(@start);
+	printf("Bye\n");
+}
