@@ -4,6 +4,9 @@
  *
  *	Rong Tao 2022-01-10
  */
+//#include <trace/events/power.h>
+
+#define PWE_EVENT_EXIT -1
 
 BEGIN
 {
@@ -12,9 +15,16 @@ BEGIN
 
 tracepoint:power:cpu_idle
 {
-	//$state = args->state;
+	$state = args->state;
 	$cpu = args->cpu_id;
 	@idlecount[comm, $cpu, kstack] = count();
+
+	//warning here
+	if ($state == PWE_EVENT_EXIT) {
+		//EXIT
+	} else {
+		//ENTER
+	}
 }
 
 interval:s:1
