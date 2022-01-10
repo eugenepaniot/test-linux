@@ -1,0 +1,28 @@
+#!/usr/bin/env bpftrace
+/**
+ *	cpu_idle
+ *
+ *	Rong Tao 2022-01-10
+ */
+
+BEGIN
+{
+	printf("Tracing cpu_idle. Hit Ctrl-C to end.\n");
+}
+
+tracepoint:power:cpu_idle
+{
+	//$state = args->state;
+	$cpu = args->cpu_id;
+	@idlecount[comm, $cpu, kstack] = count();
+}
+
+interval:s:1
+{
+	print(@idlecount);
+}
+
+END
+{
+	printf("Bye\n");
+}
