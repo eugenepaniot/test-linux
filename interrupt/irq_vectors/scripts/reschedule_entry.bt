@@ -1,0 +1,31 @@
+#!/usr/bin/env bpftrace
+/**
+ *	reschedule_entry and exit
+ *
+ *	Rong Tao 2022-01-12
+ */
+
+BEGIN
+{
+	printf("Tracing reschedule interrupt entry and exit. Hit Ctrl-C to end.\n");
+}
+
+tracepoint:irq_vectors:reschedule_entry
+{
+	$vector = args->vector;
+	@irqcount[$vector] = count();
+	@start[tid] = nsecs;
+}
+
+tracepoint:irq_vectors:reschedule_exit
+/@start[tid]/
+{
+	@latency[comm] = hist((nsecs - @start[tid]) / 1000);
+	clear(@start);
+}
+
+END
+{
+	clear(@start);
+	printf("Bye\n");
+}
