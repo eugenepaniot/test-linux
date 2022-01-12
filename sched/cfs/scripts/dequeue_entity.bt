@@ -1,0 +1,56 @@
+#!/usr/bin/env bpftrace
+/**
+ *	deqeueu_entiry.bt
+ *	2022年1月12日
+ *	rongtao@cestc.cn
+ *
+ *  一个示例: kstack
+ *       dequeue_entity+1
+ *       dequeue_task_fair+583
+ *       __sched_text_start+942
+ *       schedule+201
+ *       schedule_hrtimeout_range_clock+651
+ *       poll_schedule_timeout.constprop.19+166
+ *       do_select+3580
+ *       core_sys_select+807
+ *       kern_select+261
+ *       __x64_sys_select+186
+ *       do_syscall_64+55
+ *       entry_SYSCALL_64_after_hwframe+68
+ */
+
+BEGIN
+{
+	printf("Tracing CFS dequeue, Hit ctrl-c to end.\n");
+}
+
+kprobe:dequeue_entity
+{
+	@start[tid] = nsecs;
+	printf("kstack = %s\n", kstack);
+}
+
+kretprobe:dequeue_entity
+/@start[tid]/
+{
+	@latency_us[comm] = hist((nsecs - @start[tid])/1000);
+	clear(@start);
+}
+
+END
+{
+	clear(@start);
+	printf("Bye.\n");
+}
+dequeue_entity+1
+        dequeue_task_fair+583
+        __sched_text_start+942
+        schedule+201
+        schedule_hrtimeout_range_clock+651
+        poll_schedule_timeout.constprop.19+166
+        do_select+3580
+        core_sys_select+807
+        kern_select+261
+        __x64_sys_select+186
+        do_syscall_64+55
+        entry_SYSCALL_64_after_hwframe+68

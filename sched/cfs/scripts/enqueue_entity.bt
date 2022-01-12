@@ -1,0 +1,47 @@
+#!/usr/bin/env bpftrace
+/**
+ *	enqeueu_entiry.bt
+ *	2022年1月12日
+ *	rongtao@cestc.cn
+ *
+ *	一个 kstack 示例:
+ *       enqueue_entity+1
+ *       enqueue_task_fair+529
+ *       enqueue_task+172
+ *       ttwu_do_activate+339
+ *       try_to_wake_up+1018
+ *       __queue_work+1077
+ *       queue_work_on+125
+ *       pty_write+338
+ *       n_tty_write+1206
+ *       file_tty_write.isra.27+1128
+ *       new_sync_write+943
+ *       vfs_write+1205
+ *       ksys_write+241
+ *       do_syscall_64+55
+ *       entry_SYSCALL_64_after_hwframe+68
+ */
+
+BEGIN
+{
+	printf("Tracing CFS enqueue, Hit ctrl-c to end.\n");
+}
+
+kprobe:enqueue_entity
+{
+	@start[tid] = nsecs;
+	printf("kstack = %s\n", kstack);
+}
+
+kretprobe:enqueue_entity
+/@start[tid]/
+{
+	@latency_us[comm] = hist((nsecs - @start[tid])/1000);
+	clear(@start);
+}
+
+END
+{
+	clear(@start);
+	printf("Bye.\n");
+}
