@@ -1,6 +1,6 @@
 /**
- *	File tasklet-bh.c 
- *	Time 2021.11.03
+ *	File tasklet-template.c 
+ *	Time 2022.01.12
  *	Author Rong Tao <rongtao@cestc.cn>
  */
 #include <linux/module.h>    // included for all kernel modules
@@ -11,14 +11,14 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Rong Tao");
-MODULE_DESCRIPTION("A Simple request irq module");
+MODULE_DESCRIPTION("A Simple tasklet bottom half module");
 MODULE_VERSION("0.1");
 
 static int irqnum = 2;
 module_param(irqnum, int, 0644);
 MODULE_PARM_DESC(irqnum, "irq number, acpi is OK");
 
-static char *name = "tasklet-bh";
+static char *name = "tasklet-template";
 module_param( name, charp, S_IRUGO);
 MODULE_PARM_DESC(name, "irq name");	
 
