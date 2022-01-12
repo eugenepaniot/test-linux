@@ -164,7 +164,7 @@ static void work_debugfs_remove(void)
 }
 /********** debugfs **********/
 
-static void work_func(struct work_struct *work)
+static void __attribute__((unused)) work_func(struct work_struct *work)
 {
 	struct test_work *tw;
 

@@ -1,3 +1,4 @@
+obj-m += workqueue-template.o
 obj-m += workqueue1.o
 obj-m += workqueue2.o
 obj-m += workqueue3-hd.o

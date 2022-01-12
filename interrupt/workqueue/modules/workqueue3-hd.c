@@ -131,7 +131,7 @@ static const struct file_operations type_fops = {
 #define DELAY	500	/* unit: msec */
 static int start_show(struct seq_file *s, void *unused)
 {
-	struct test_work *tw = s->private;
+	struct test_work __attribute__((unused)) *tw = s->private;
 
 	pr_info("%s: called\n", __func__);
 
