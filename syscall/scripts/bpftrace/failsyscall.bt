@@ -1,0 +1,75 @@
+#!/usr/bin/env bpftrace
+/**
+*	File: failsyscall.bt
+ *	Time: 2022年1月13日
+ *	Author: 荣涛 <rongtao@cestc.cn>
+ *	
+ *	追踪 read(2) 系统调用时延，并显示失败的调用 和 原因
+ *	追踪其他系统调用请 修改 sys_enter_read 和 sys_exit_read
+ */
+#include <uapi/asm-generic/errno-base.h>
+
+BEGIN
+{
+	printf("Tracing failed read(2) syscall, Hit ctrl-C to end.\n");
+	printf("%-8s %-16s %-8s\n", "PID", "COMM", "ERRNO");
+	
+	// see <uapi/asm-generic/errno-base.h>
+	@errno_string[EPERM] = "Operation not permitted";
+	@errno_string[ENOENT] = "No such file or directory";
+	@errno_string[ESRCH] = "No such process";
+	@errno_string[EINTR] = "Interrupted system call";
+	@errno_string[EIO] = "I/O error";
+	@errno_string[ENXIO] = "No such device or address";
+	@errno_string[E2BIG] = "Argument list too long";
+	@errno_string[ENOEXEC] = "Exec format error";
+	@errno_string[EBADF] = "Bad file number";
+	@errno_string[ECHILD] = "No child processes";
+	@errno_string[EAGAIN] = "Try again";
+	@errno_string[ENOMEM] = "Out of memory";
+	@errno_string[EACCES] = "Permission denied";
+	@errno_string[EFAULT] = "Bad address";
+	@errno_string[ENOTBLK] = "Block device required";
+	@errno_string[EBUSY] = "Device or resource busy";
+	@errno_string[EEXIST] = "File exists";
+	@errno_string[EXDEV] = "Cross-device link";
+	@errno_string[ENODEV] = "No such device";
+	@errno_string[ENOTDIR] = "Not a directory";
+	@errno_string[EISDIR] = "Is a directory";
+	@errno_string[EINVAL] = "Invalid argument";
+	@errno_string[ENFILE] = "File table overflow";
+	@errno_string[EMFILE] = "Too many open files";
+	@errno_string[ENOTTY] = "Not a typewriter";
+	@errno_string[ETXTBSY] = "Text file busy";
+	@errno_string[EFBIG] = "File too large";
+	@errno_string[ENOSPC] = "No space left on device";
+	@errno_string[ESPIPE] = "Illegal seek";
+	@errno_string[EROFS] = "Read-only file system";
+	@errno_string[EMLINK] = "Too many links";
+	@errno_string[EPIPE] = "Broken pipe";
+	@errno_string[EDOM] = "Math argument out of domain of func";
+	@errno_string[ERANGE] = "Math result not representable";
+}
+
+tracepoint:syscalls:sys_enter_read
+{
+	@start[tid] = nsecs;
+}
+
+tracepoint:syscalls:sys_exit_read
+/@start[tid]/
+{
+	@latency_us = hist((nsecs - @start[tid]) / 1000);
+	clear(@start);
+	@readret = hist(args->ret);
+	if (args->ret < 0) {
+		printf("%-8d %-16s %-8s\n", pid, comm, @errno_string[-args->ret]);
+	}
+}
+
+END
+{
+	clear(@start);
+	clear(@errno_string);
+	printf("Bye.\n");
+}
