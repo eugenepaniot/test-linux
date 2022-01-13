@@ -1,0 +1,36 @@
+#!/usr/bin/env bpftrace
+/**
+ *	File:	enqueue-dequeue-latency.bt
+ *	Time:	2022.01.13
+ *	Author: 荣涛 <rongtao@cestc.cn>
+ *
+ *	跟踪一个进程 入队 到 出队 的时延
+ */
+
+BEGIN
+{
+	printf("Tracing latency between enqueue and dequeue.\n");
+	if ($1 == 0) {
+		printf("input PID.\n");
+		exit();
+	}
+}
+
+kprobe:enqueue_entity
+/$1 && $1 == pid/
+{
+	@start[tid] = nsecs;
+}
+
+kprobe:dequeue_entity
+/@start[tid]/
+{
+	@latency_us[pid, comm] = hist((nsecs - @start[tid]) / 1000);
+	clear(@start);
+}
+
+END
+{
+	clear(@start);
+	printf("Bye.\n");
+}
