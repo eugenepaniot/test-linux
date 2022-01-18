@@ -42,15 +42,3 @@ END
 	clear(@start);
 	printf("Bye.\n");
 }
-dequeue_entity+1
-        dequeue_task_fair+583
-        __sched_text_start+942
-        schedule+201
-        schedule_hrtimeout_range_clock+651
-        poll_schedule_timeout.constprop.19+166
-        do_select+3580
-        core_sys_select+807
-        kern_select+261
-        __x64_sys_select+186
-        do_syscall_64+55
-        entry_SYSCALL_64_after_hwframe+68
