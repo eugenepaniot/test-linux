@@ -7,7 +7,8 @@
 
 BEGIN
 {
-	printf("Tracing reschedule interrupt entry and exit. Hit Ctrl-C to end.\n");
+	printf("Tracing reschedule interrupt entry and exit.\n");
+	printf("Hit Ctrl-C to end.\n");
 }
 
 tracepoint:irq_vectors:reschedule_entry
