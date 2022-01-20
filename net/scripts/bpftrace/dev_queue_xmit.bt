@@ -1,0 +1,30 @@
+#!/usr/bin/env bpftrace
+/**
+ *	dev_queue_xmit.bt
+ *	2022年1月20日
+ *	rongtao@cestc.cn
+ *
+ */
+
+BEGIN
+{
+	printf("Tracing dev_queue_xmit, Hit ctrl-c to end.\n");
+}
+
+kprobe:dev_queue_xmit
+{
+	@start[tid] = nsecs;
+}
+
+kretprobe:dev_queue_xmit
+/@start[tid]/
+{
+	@latency_us[comm] = hist((nsecs - @start[tid])/1000);
+	clear(@start);
+}
+
+END
+{
+	clear(@start);
+	printf("Bye.\n");
+}

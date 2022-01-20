@@ -1,0 +1,30 @@
+#!/usr/bin/env bpftrace
+/**
+ *	netif_rx.bt
+ *	2022年1月20日
+ *	rongtao@cestc.cn
+ *
+ */
+
+BEGIN
+{
+	printf("Tracing netif_rx, Hit ctrl-c to end.\n");
+}
+
+kprobe:netif_rx
+{
+	@start[tid] = nsecs;
+}
+
+kretprobe:netif_rx
+/@start[tid]/
+{
+	@latency_us[comm] = hist((nsecs - @start[tid])/1000);
+	clear(@start);
+}
+
+END
+{
+	clear(@start);
+	printf("Bye.\n");
+}
