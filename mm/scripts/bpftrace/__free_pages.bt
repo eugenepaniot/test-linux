@@ -1,0 +1,39 @@
+#!/usr/bin/env bpftrace
+/**
+ *	Tracing __free_pages() function
+ *	
+ *	Author:	荣涛
+ *	Data:	2022-02-03
+ *	
+ */
+#include <linux/mm.h>
+#include <asm/page_types.h>
+
+BEGIN
+{
+	printf("Tracing __free_pages(), Hit ctrl+C to end.\n");
+}
+
+kprobe:__free_pages
+{
+	//printf("__free_pages %d %d.\n", arg1, arg2);
+	//@orders[tid] = ((arg1 + 1)*(1<<PAGE_SHIFT));
+	@orders[tid] = arg1;
+	@start[tid] = nsecs;
+	@kstack_of_free_pages[kstack] = count();
+}
+
+kretprobe:__free_pages
+/@start[tid] && @orders[tid] >= 0 && tid != pid/
+{
+	@latency_us[@orders[tid]] = hist((nsecs - @start[tid]));
+	clear(@orders);
+	clear(@start);
+}
+
+END
+{
+	clear(@orders);
+	clear(@start);
+	printf("Bye. %d\n", PAGE_SHIFT);
+}
