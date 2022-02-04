@@ -1,0 +1,40 @@
+#!/usr/bin/env bpftrace
+/**
+ *	File: apic_ack_irq.bt
+ *	Author: Rong Tao
+ *	Date: 2022-02-04
+ *
+ *	Description:
+ *	处理apic的进程如下：
+ *	1. worker_thread 进程
+ *	2. idle 进程
+ */
+#include <linux/irq.h>
+#include <linux/irqdomain.h>
+
+BEGIN
+{
+	printf("Tracing apic_ack_irq, Hit Ctrl-C to end.\n");
+}
+
+kprobe:apic_ack_irq
+{
+	$data = (struct irq_data*)arg0;
+	$chip = (struct irq_chip*)$data->chip;
+	$domain = (struct irq_domain*)$data->domain;
+
+	//软件中断号
+	@irqs[$data->irq] = count();
+	//硬件中断号
+	@hwirqs[$data->irq] = count();
+
+	@chips[str($chip->name)] = count();
+	@domains[str($domain->name)] = count();
+
+	//@stack_count[kstack] = count();
+}
+
+END
+{
+	printf("Bye.\n");
+}

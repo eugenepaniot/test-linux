@@ -1,0 +1,33 @@
+#!/usr/bin/env bpftrace
+/**
+ *	File: x2apic_send_IPI.bt
+ *	Author: Rong Tao
+ *	Date: 2022-02-04
+ *
+ *	Description:
+ *	处理apic的进程如下：
+ *	1. worker_thread 进程
+ *	2. idle 进程
+ */
+#include <linux/irq.h>
+#include <linux/irqdomain.h>
+
+BEGIN
+{
+	printf("Tracing x2apic_send_IPI, Hit Ctrl-C to end.\n");
+}
+
+kprobe:x2apic_send_IPI
+{
+	$cpu = (struct irq_data*)arg0;
+	$vector = (struct irq_chip*)arg1;
+	
+	printf("%d, %d\n", $cpu, $vector);
+
+	//@stack_count[kstack] = count();
+}
+
+END
+{
+	printf("Bye.\n");
+}

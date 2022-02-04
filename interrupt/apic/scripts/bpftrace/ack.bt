@@ -1,0 +1,42 @@
+#!/usr/bin/env bpftrace
+/**
+ *	File: ack.bt
+ *	Author: Rong Tao
+ *	Date: 2022-02-04
+ *
+ *	Description:
+ *	
+ */
+#include <linux/irq.h>
+#include <linux/irqdomain.h>
+
+BEGIN
+{
+	printf("Tracing apic_ack_irq, Hit Ctrl-C to end.\n");
+}
+
+kprobe:apic_ack_irq,
+kprobe:ack_lapic_irq,
+kprobe:apic_ack_edge,
+kprobe:ioapic_ack_level,
+kprobe:ioapic_ir_ack_level
+{
+	$data = (struct irq_data*)arg0;
+	$chip = (struct irq_chip*)$data->chip;
+	$domain = (struct irq_domain*)$data->domain;
+
+	//软件中断号
+	@irqs[probe, $data->irq] = count();
+	//硬件中断号
+	@hwirqs[probe, $data->irq] = count();
+
+	@chips[probe, str($chip->name)] = count();
+	@domains[probe, str($domain->name)] = count();
+
+	//@stack_count[probe, kstack] = count();
+}
+
+END
+{
+	printf("Bye.\n");
+}
