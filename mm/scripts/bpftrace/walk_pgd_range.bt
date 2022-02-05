@@ -1,0 +1,26 @@
+#!/usr/bin/env bpftrace
+/**
+ *	File: walk_pgd_range.bt
+ *	Author: Rong Tao
+ *	Date: 2022-02-05
+ */
+BEGIN
+{
+	printf("Tracing walk_pgd_range(), Hit ctrl-C to end.\n");
+	printf("%-6s %-8s %-16s %-16s\n",
+		"PID", "COMM", "Start", "End");
+}
+
+kprobe:walk_pgd_range
+{
+	$start = arg0;
+	$end = arg1;
+
+	printf("%-6d %-8s %-16lx %-16lx\n", 
+		pid, comm, $start, $end);
+}
+
+END
+{
+	printf("Bye.\n");
+}
