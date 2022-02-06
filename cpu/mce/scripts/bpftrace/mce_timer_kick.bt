@@ -1,0 +1,14 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+	printf("Tracing MCE(Machine Check Exception) timer.\n");
+}
+
+kprobe:mce_timer_kick
+{
+	printf("MCE Notify\n");
+}
+
+END
+{}
