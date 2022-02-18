@@ -1,0 +1,21 @@
+#!/usr/bin/env bpftrace
+/**
+ *	File: ext4_dax_falut.bt
+ *	Author: Rong Tao <rongtao@cestc.cn>
+ *	Data:
+ *	2022-02-18	Create this. TODO
+ */
+BEGIN
+{
+	printf("Tracing ext4_dax_falut, Ctrl-C to end.\n");
+}
+
+kprobe:ext4_dax_falut
+{
+	//TODO: AEP作为Pmem使用时，借助内核提供的ext4_dax_fault（）实现从AEP到内存的映射
+}
+
+END
+{
+	printf("Bye.\n");
+}
