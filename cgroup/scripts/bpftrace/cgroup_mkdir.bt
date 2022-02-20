@@ -1,0 +1,40 @@
+#!/usr/bin/env bpftrace
+/**
+ * cgroup_mkdir.bt
+ * Rong Tao <rongtao@cestc.cn>
+ * 2022.02.20
+ * 
+ * Tracing cgroup_mkdir
+ * 
+ * Introduction:
+ * You can run:
+ *	$ docker run -ti centos /bin/bash
+ */
+/*
+int root
+int id
+int level
+__data_loc char[] path
+*/
+BEGIN
+{
+	printf("Tracing cgroup_mkdir, hit ctrl-C to end.\n");
+	printf("%-6s %-6s %-6s %-8s\n", "ROOT", "ID", "LEVEL", "PATH");
+}
+
+tracepoint:cgroup:cgroup_mkdir
+{
+	$root = args->root;
+	$id = args->id;
+	$level = args->level;
+	$path = args->path;
+
+	printf("%-6d %-6d %-6d %s\n",
+		$root, $id, $level, str($path));
+}
+
+END
+{
+	printf("Bye.\n");
+}
+

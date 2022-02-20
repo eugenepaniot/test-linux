@@ -1,0 +1,26 @@
+#!/usr/bin/env bpftrace
+
+#include <linux/memcontrol.h>
+#include <linux/cgroup-defs.h>
+
+BEGIN
+{
+	printf("Tracing mem_cgroup_alloc. Hit ctrl-C to end.\n");
+}
+
+kprobe:mem_cgroup_alloc
+{
+	//TODO
+}
+
+kretprobe:mem_cgroup_alloc
+{
+	$mem_cgroup = (struct mem_cgroup*)retval;
+
+	//TODO
+}
+
+END
+{
+	printf("Bye.\n");
+}
