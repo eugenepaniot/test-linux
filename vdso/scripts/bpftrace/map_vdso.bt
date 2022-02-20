@@ -1,0 +1,36 @@
+#!/usr/bin/env bpftrace
+/**
+ * Rong Tao <rongtao@cestc.cn>
+ * 2022.02.20
+ * Tracing kprobe:map_vdso
+ *
+ * Every process create will call 'map_vdso' function
+ */
+#include <linux/kernel.h>
+#if defined(CONFIG_X86_64)
+// see arch/x86/include/asm/vdso.h
+struct vdso_image {
+	void *data;
+	unsigned long size;   /* Always a multiple of PAGE_SIZE */
+};
+#else
+# error "Unsupport arch, just x86_64 right now."
+#endif
+
+BEGIN
+{
+	printf("Tracing kprobe:map_vdso, hit ctrl-C to end.\n");
+	printf("%-8s %-16s %-6s %-16s\n", "PID", "COMM", "SIZE", "ADDR");
+}
+
+kprobe:map_vdso
+{
+	$vdso_image = (struct vdso_image*)arg0;
+	$addr = arg1;
+	printf("%-8d %-16s %-6d %-16lx\n", tid, comm, $vdso_image->size, $addr);
+}
+
+END
+{
+	printf("Bye.\n");
+}
