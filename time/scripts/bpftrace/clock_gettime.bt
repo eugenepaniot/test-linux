@@ -1,0 +1,28 @@
+#!/usr/bin/env bpftrace
+/**
+ * Rong Tao <rongtao@cestc.cn>
+ * 2022.02.20
+ * Tracing clock_gettime
+ */
+
+BEGIN
+{
+	printf("Tracing clock_gettime, hit ctrl-C to end.\n");
+}
+
+tracepoint:syscalls:sys_enter_clock_gettime
+{
+	@start[tid] = nsecs;
+}
+
+tracepoint:syscalls:sys_exit_clock_gettime
+/@start[tid]/
+{
+	@latency_ns_clock_gettime[comm] = hist(nsecs - @start[tid]);
+	clear(@start);
+}
+
+END
+{
+	printf("Bye.\n");
+}
