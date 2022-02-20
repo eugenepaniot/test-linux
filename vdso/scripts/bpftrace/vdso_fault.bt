@@ -21,7 +21,8 @@ struct vdso_image {
 BEGIN
 {
 	printf("Tracing kprobe:vdso_fault, hit ctrl-C to end.\n");
-	printf("%-8s %-16s\n", "PID", "COMM");
+	printf("%-8s %-16s %-16s %-16s %-16s\n",
+		 "PID", "COMM", "KADDR", "VM_START", "VM_END");
 }
 
 kprobe:vdso_fault
