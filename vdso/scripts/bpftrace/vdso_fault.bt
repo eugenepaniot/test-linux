@@ -37,6 +37,21 @@ kprobe:vdso_fault
 	 */
 	printf("%-8d %-16s %-16lx %-16lx %-16lx\n",
 		 tid, comm, $kaddr, $vma->vm_start, $vma->vm_end);
+
+	/**
+	 * @vdso_fault[
+	 *     vdso_fault+1
+	 *     __do_fault+51
+	 *     do_read_fault+230
+	 *     do_fault+197
+	 *     __handle_mm_fault+971
+	 *     handle_mm_fault+197
+	 *     do_user_addr_fault+443
+	 *     exc_page_fault+98
+	 *     asm_exc_page_fault+30
+	 * ]: 13
+	*/
+	@vdso_fault[kstack] = count();
 }
 
 END

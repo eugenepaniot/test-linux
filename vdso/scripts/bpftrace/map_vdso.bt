@@ -28,6 +28,21 @@ kprobe:map_vdso
 	$vdso_image = (struct vdso_image*)arg0;
 	$addr = arg1;
 	printf("%-8d %-16s %-6d %-16lx\n", tid, comm, $vdso_image->size, $addr);
+
+	/**
+	 * @map_vdso_kstack[
+	 *     map_vdso+1
+	 *     load_elf_binary+2665
+	 *     search_binary_handler+210
+	 *     exec_binprm+81
+	 *     bprm_execve.part.0+364
+	 *     do_execveat_common.isra.0+342
+	 *    __x64_sys_execve+51
+	 *    do_syscall_64+56
+	 *    entry_SYSCALL_64_after_hwframe+68
+	 * ]: 2
+	 */
+	@map_vdso_kstack[kstack] = count();
 }
 
 END
