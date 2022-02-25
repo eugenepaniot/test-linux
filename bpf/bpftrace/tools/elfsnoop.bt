@@ -9,7 +9,7 @@
 BEGIN
 {
 	printf("Tracing ELF loads. ctrl-C to end.\n");
-	printf("%8s %-6s %-18s %-18s %-10s %-10s RET.\n", 
+	printf("%8s %-6s %-18s %-18s %-10s %-10s RET.\n",
 			"TIME", "PID", "Interpreter", "File", "Mount", "Inode");
 }
 
@@ -25,7 +25,7 @@ kretprobe:load_elf_binary
 	time("%H:%M:%S ");
 	printf("%-6d %-18s %-18s %-10s %-10d %3d\n",
 		pid,
-		str($bin->interp), str($bin->filename),  
+		str($bin->interp), str($bin->filename),
 		str($bin->file->f_path.mnt->mnt_root->d_name.name),
 		$bin->file->f_inode->i_ino, retval);
 	delete(@arg0[tid]);
