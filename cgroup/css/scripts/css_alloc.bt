@@ -1,0 +1,32 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+	printf("Tracing all xxx_css_alloc(), hit ctrl+c to end.\n");
+	printf("%-8s %-16s %-32s\n", "PID", "COMM", "PROBE");
+}
+
+/**
+ * Run test:
+ *	$ docker run -it docker.io/dokken/centos-stream-9 echo hello
+ */
+kprobe:blkcg_css_alloc,
+kprobe:cgrp_css_alloc,
+kprobe:cpu_cgroup_css_alloc,
+kprobe:cpuacct_css_alloc,
+kprobe:cpuset_css_alloc,
+kprobe:devcgroup_css_alloc,
+kprobe:freezer_css_alloc,
+kprobe:hugetlb_cgroup_css_alloc,
+kprobe:mem_cgroup_css_alloc,
+kprobe:pids_css_alloc,
+kprobe:rdmacg_css_alloc
+{
+	printf("%-8d %-16s %-32s\n", pid, comm, probe);
+	@type_count[probe] = count();
+}
+
+END
+{
+	printf("Bye.\n");
+}
