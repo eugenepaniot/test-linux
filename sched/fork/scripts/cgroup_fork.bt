@@ -1,0 +1,14 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+	printf("Tracing cgroup_fork, hit ctrl+c to end.\n");
+	printf("%-16s %-8s\n", "COMM", "PID");
+}
+
+kprobe:cgroup_fork
+{
+	printf("%-16s %-8d\n", comm, pid);
+
+	@kstack_count[kstack] = count();
+}
