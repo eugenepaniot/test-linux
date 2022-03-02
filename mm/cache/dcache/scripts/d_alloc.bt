@@ -1,0 +1,24 @@
+#!/usr/bin/env bpftrace
+
+#include <linux/dcache.h>
+
+BEGIN
+{
+	printf("Tracing d_alloc(), hit ctrl-C to end.\n");
+}
+
+kprobe:d_alloc
+{
+	$parent = (struct dentry*)arg0;
+	$qstr = (struct qstr*)arg1;
+	$name = $qstr->name;
+
+	//printf("%s\n", str($name));
+
+	@d_alloc_count[comm, pid] = count();
+}
+
+END
+{
+	printf("Bye.\n");
+}

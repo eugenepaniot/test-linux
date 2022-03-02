@@ -71,3 +71,7 @@ modules.order
 
 # vim temp swap file
 *.swp
+
+# perf
+perf.data
+perf.data.old

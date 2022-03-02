@@ -1,0 +1,5 @@
+#!/usr/bin/env stap
+
+probe kernel.function("d_alloc") {
+    printf("[%d] %s(pid:%d ppid:%d) %s %s\n", gettimeofday_ms(), execname(), pid(), ppid(), ppfunc(), kernel_string_n($name->name, $name->len));
+}

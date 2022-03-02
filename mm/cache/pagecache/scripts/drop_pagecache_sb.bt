@@ -1,0 +1,35 @@
+#!/usr/bin/env bpftrace
+/**
+ * File: drop_pagecache_sb.bt
+ * Author: Rong Tao (rongtao@cestc.cn)
+ */
+
+#include <linux/fs.h>
+
+BEGIN
+{
+	printf("Tracing drop_pagecache_sb, Hit ctrl-C to end.\n");
+}
+
+/**
+ * Use 'echo 1 > /proc/sys/vm/drop_caches' trigger this probe, or 'echo 3'.
+ */
+kprobe:drop_pagecache_sb
+{
+	$super_block = (struct super_block*)arg0;
+	$dentry_root = $super_block->s_root;
+
+	/**
+	 * Of course is '/'
+	 */
+	printf("%s\n", str($dentry_root->d_name.name));
+}
+
+interval:s:3
+{
+}
+
+END
+{
+	printf("Bye.\n");
+}
