@@ -2,12 +2,13 @@
 
 BEGIN
 {
-	printf("Tracing pagecache_get_page, Hit ctrl-C to end.\n");
+	printf("Tracing __page_cache_alloc, Hit ctrl-C to end.\n");
 }
 
-kprobe:pagecache_get_page
+kprobe:__page_cache_alloc
 {
 	@comm_count[comm] = count();
+	@kstack_count[kstack] = count();
 }
 
 interval:s:3

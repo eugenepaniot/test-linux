@@ -1,0 +1,34 @@
+#!/usr/bin/env bpftrace
+/**
+ * File: pagecache_get_page.bt
+ * Author: Rong Tao (rongtao@cestc.cn)
+ */
+
+#include <linux/fs.h>
+
+BEGIN
+{
+	printf("Tracing pagecache_get_page, Hit ctrl-C to end.\n");
+}
+
+kprobe:pagecache_get_page
+{
+	$address_space = (struct address_space*)arg0;
+	$inode = (struct inode*)$address_space->host;
+	$i_ino = $inode->i_ino;
+	
+	/* stat [filename] check inode number */
+	@ino_count[$i_ino] = count();
+	@comm_count[comm] = count();
+	@kstack_count[kstack] = count();
+}
+
+interval:s:3
+{
+	print(@comm_count);
+}
+
+END
+{
+	printf("Bye.\n");
+}

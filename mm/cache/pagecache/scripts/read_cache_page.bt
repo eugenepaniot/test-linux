@@ -1,0 +1,39 @@
+#!/usr/bin/env bpftrace
+/**
+ * File: read_cache_page.bt
+ * Author: Rong Tao (rongtao@cestc.cn)
+ */
+
+#include <linux/fs.h>
+
+BEGIN
+{
+	printf("Tracing read_cache_page, Hit ctrl-C to end.\n");
+}
+
+/**
+ * Not be called in CentOS Stream 9
+ *
+ */
+kprobe:read_cache_page,
+kprobe:read_cache_page_gfp
+{
+	$address_space = (struct address_space*)arg0;
+	$inode = (struct inode*)$address_space->host;
+	$i_ino = $inode->i_ino;
+	
+	/* stat [filename] check inode number */
+	@ino_count[$i_ino] = count();
+	@comm_count[comm] = count();
+	@kstack_count[kstack] = count();
+}
+
+interval:s:3
+{
+	print(@comm_count);
+}
+
+END
+{
+	printf("Bye.\n");
+}
