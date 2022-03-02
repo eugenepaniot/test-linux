@@ -1,0 +1,37 @@
+#!/usr/bin/env bpftrace
+/**
+ * File: rmqueue_bulk.bt
+ *
+ * Author: Rong Tao <rongtao@cestc.cn>
+ */
+
+#include <linux/mmzone.h>
+
+struct _watermark {
+	unsigned long values[NR_WMARK];
+};
+
+BEGIN
+{
+	printf("Tracing rmqueue_bulk(), hit ctrl-c to quit.\n");
+}
+
+kprobe:rmqueue_bulk
+{
+	$zone = (struct zone*)arg0;
+	$zonename = $zone->name;
+	$wmark = (struct _watermark)$zone->_watermark;
+
+	/**
+	 * Same as /proc/zoneinfo
+	 */
+	printf("Zone %s\n", str($zonename));
+	printf("  min = %ld\n", $wmark.values[0]);
+	printf("  low = %ld\n", $wmark.values[1]);
+	printf("  high = %ld\n", $wmark.values[2]);
+}
+
+END
+{
+	printf("Bye.\n");
+}

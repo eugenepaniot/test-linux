@@ -1,0 +1,33 @@
+#!/usr/bin/env bpftrace
+/**
+ * File: rmqueue_bulk.bt
+ *
+ * Author: Rong Tao <rongtao@cestc.cn>
+ */
+
+#include <linux/mmzone.h>
+
+BEGIN
+{
+	printf("Tracing rmqueue_bulk(), hit ctrl-c to quit.\n");
+}
+
+kprobe:rmqueue_bulk
+{
+	/**
+	 * If you want to get watermark of zone, see zone/watermark folder.
+	 */
+	$zone = (struct zone*)arg0;
+	$order = arg1;
+	$count = arg2;
+
+	$zonename = $zone->name;
+
+	printf("%s\n", str($zonename));
+
+}
+
+END
+{
+	printf("Bye.\n");
+}
