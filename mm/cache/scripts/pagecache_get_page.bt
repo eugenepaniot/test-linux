@@ -1,0 +1,21 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+	printf("Tracing pagecache_get_page, Hit ctrl-C to end.\n");
+}
+
+kprobe:pagecache_get_page
+{
+	@comm_count[comm] = count();
+}
+
+interval:s:3
+{
+	print(@comm_count);
+}
+
+END
+{
+	printf("Bye.\n");
+}
