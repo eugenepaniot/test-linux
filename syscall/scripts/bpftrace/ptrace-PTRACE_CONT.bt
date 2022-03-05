@@ -1,0 +1,20 @@
+#!/usr/bin/env bpftrace
+
+#include <uapi/linux/ptrace.h>
+/*
+    int __syscall_nr
+    long request
+    long pid
+    unsigned long addr
+    unsigned long data
+*/
+tracepoint:syscalls:sys_enter_ptrace
+{
+	@ptrace_request[pid] = args->request;
+}
+
+tracepoint:syscalls:sys_exit_ptrace
+/@ptrace_request[pid] != PTRACE_CONT/
+{
+	printf("ustack %s\n", ustack);
+}
