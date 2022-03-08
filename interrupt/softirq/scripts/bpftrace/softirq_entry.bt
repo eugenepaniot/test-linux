@@ -1,0 +1,18 @@
+#!/usr/bin/env bpftrace
+/**
+ * File: softirq_entry.bt
+ *
+ * Author: Rong Tao <rongtao@cestc.cn>
+ * Time: 2022.03.08
+ */
+
+BEGIN
+{
+	printf("Tracing softirq_entry, hit ctrl+c to end.\n");
+}
+
+tracepoint:irq:softirq_entry
+{
+	//printf("%d\n", args->vec);
+	//TODO
+}
