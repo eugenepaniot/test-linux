@@ -1,0 +1,6 @@
+#!/usr/bin/env bpftrace
+
+kprobe:wakeup_kswapd
+{
+	printf("COMM %s, PID %d\n", comm, pid);
+}
