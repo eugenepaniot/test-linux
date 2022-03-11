@@ -4,9 +4,13 @@
  *
  * Author:	Ge Changzhong (gechangzhong@cestc.cn)
  *			Rong Tao (rongtao@cestc.cn)
- * Time: 2022-03-11
  *
- * syscall, vDSO, rdtsc compare.
+ * Date: 2022-02-20
+ *
+ * 2022-03-11 Rong Tao
+ *	Add rdtsc clock_gettime() like API.
+ *
+ * syscall, vDSO, rdtsc latency compare.
  */
 #include <unistd.h>
 #include <stdio.h>
@@ -24,28 +28,68 @@ typedef enum {
 	TEST_SYSCALL,
 	TEST_VSYSCALL,
 	TEST_VDSO,
-#if defined(__x86_64__)
+#if defined(__x86_64__) && defined(HAVE_DPDK_TSC_FREQ)
 	TEST_RDTSC,
 #endif
 } test_enum;
 
-#if defined(__x86_64__)
-static inline uint64_t __rdtsc(void)
+#if defined(__x86_64__) && defined(HAVE_DPDK_TSC_FREQ)
+
+#include "dpdk/dpdk.h" /* for 'tsc_freq()' */
+
+uint64_t start_tsc = 0;
+uint64_t tsc_freq = 0;
+struct timespec start_timespec;
+
+/* 读取 TSC */
+static inline uint64_t
+__rdtsc(void)
 {
    unsigned int a, d;
    asm volatile ("rdtsc" : "=a" (a), "=d"(d));
    return ((unsigned long) a) | (((unsigned long) d) << 32);
 }
 
+/**
+ * 获取程序启动时的 tsc 和 timespec
+ * 用来计算 clock_gettime() 的时间
+ */
+static  __attribute__((constructor(101)))
+void ____start_record_tsc_and_freq(void)
+{
+	start_tsc = __rdtsc();
+	/* 如果你已经知道CPU TSC freq, 直接赋值亦可 */
+	tsc_freq = get_tsc_freq();
+	clock_gettime(CLOCK_REALTIME, &start_timespec);
+}
+
+/* see 'vdso/test/dpdk' */
 int rdtsc_clock_gettime(clockid_t clockid, struct timespec *tp)
 {
-	uint64_t tsc = __rdtsc();
-
+	/* 计算程序启动至此接口调用的 tsc 差值 */
+	uint64_t tsc_diff = __rdtsc() - start_tsc;
+#if defined(ACCURATE_TO_SEC)
 	/**
-	 * TODO: 注意，这里需要进一步计算才能获取 timespec
+	 * 精确到秒
 	 */
+	uint64_t time_spend_sec = tsc_diff / tsc_freq;
+	
+	/* 给当前之间赋值 */
+	tp->tv_sec = start_timespec.tv_sec + time_spend_sec;
+	tp->tv_nsec = start_timespec.tv_nsec;
+#else
+	/**
+	 * 精确到纳秒
+	 */
+	uint64_t time_spend_nsec = tsc_diff * 1000000000ULL / tsc_freq;
 
-	return tsc;
+	tp->tv_nsec = start_timespec.tv_nsec + time_spend_nsec;
+
+	tp->tv_sec = start_timespec.tv_sec + tp->tv_nsec / 1000000000ULL;
+	tp->tv_nsec %= 1000000000ULL;
+
+#endif
+	return 0;
 }
 #endif
 
@@ -71,7 +115,7 @@ void func(int cnt, test_enum te)
 	case TEST_SYSCALL:
 		test_clock_gettime = sys_clock_gettime;
 		break;
-#if defined(__x86_64__)
+#if defined(__x86_64__) && defined(HAVE_DPDK_TSC_FREQ)
 	case TEST_RDTSC:
 		test_clock_gettime = rdtsc_clock_gettime;
 		break;
@@ -87,6 +131,7 @@ void func(int cnt, test_enum te)
 		 * See vsyscall/vdso relate content
 		 */
 		test_clock_gettime(CLOCK_REALTIME, &ts);
+		//printf("%16ld, %16ld\n", ts.tv_sec, ts.tv_nsec);
 		/**
 		 * Use bpftrace tracing clock_getime, need this
 		 */
@@ -97,7 +142,7 @@ void func(int cnt, test_enum te)
 void usage(int argc, char **argv)
 {
 	printf("Usage: %s [syscall|vdso"
-#if defined(__x86_64__)
+#if defined(__x86_64__) && defined(HAVE_DPDK_TSC_FREQ)
 		"|rdtsc"
 #endif
 		"]\n", argv[0]);
@@ -118,7 +163,7 @@ int main(int argc, char *argv[])
 		te = TEST_VDSO;
 	} else if (!strcmp(argv[1], "syscall")) {
 		te = TEST_SYSCALL;
-#if defined(__x86_64__)
+#if defined(__x86_64__) && defined(HAVE_DPDK_TSC_FREQ)
 	} else if (!strcmp(argv[1], "rdtsc")) {
 		te = TEST_RDTSC;
 #endif
