@@ -1,0 +1,16 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+	printf("Tracing direct reclaim, ctrl+c to end.\n");
+}
+
+tracepoint:vmscan:mm_vmscan_direct_reclaim_begin
+{
+	printf("COMM %s, PID %d direct reclaim.\n", comm, pid);
+}
+
+tracepoint:vmscan:mm_vmscan_direct_reclaim_end
+{
+
+}

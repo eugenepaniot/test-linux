@@ -32,3 +32,7 @@ int drop_caches_sysctl_handler(struct ctl_table *table, int write,
 
 * `drop_pagecache_sb()`
 * `drop_slab()`
+
+# Links
+
+* [Documentation for /proc/sys/vm/](https://www.kernel.org/doc/html/latest/admin-guide/sysctl/vm.html)

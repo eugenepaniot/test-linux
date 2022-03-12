@@ -2,5 +2,5 @@
 
 kprobe:wakeup_kswapd
 {
-	printf("COMM %s, PID %d\n", comm, pid);
+	printf("COMM %s, PID %d wakeup kswapd.\n", comm, pid);
 }

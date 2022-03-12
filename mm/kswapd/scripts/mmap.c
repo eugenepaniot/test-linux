@@ -1,11 +1,11 @@
 /**
  * 编写一个能够唤醒 kswapd 进程的用户代码
- * TODO: 目前不成功
  */
 #include <stdio.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 
@@ -41,7 +41,7 @@ int main()
 
 	for (;;) {
 #if 1
-		p = mmap(NULL, pagesize*1024, PROT_READ|PROT_WRITE,
+		p = mmap(NULL, pagesize*100, PROT_READ|PROT_WRITE,
 				MAP_ANON|MAP_SHARED, -1, 0);
 		if (p == MAP_FAILED) {
 			//perror("mmap");
@@ -49,10 +49,11 @@ int main()
 			continue;
 		}
 		Nsuccess++;
-		for (i = 0; i < 1024; i += pagesize) {
+		for (i = 0; i < 100; i += pagesize) {
 			p[i] = 'A';
 		}
 #endif
+		usleep(300);
 	}
 	return 0;
 }
