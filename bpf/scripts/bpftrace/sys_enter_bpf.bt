@@ -1,0 +1,66 @@
+#!/usr/bin/env bpftrace
+
+#include <uapi/linux/bpf.h>
+
+BEGIN
+{
+	/*  */
+	@bpf_cmd[BPF_MAP_CREATE] = "BPF_MAP_CREATE";
+	@bpf_cmd[BPF_MAP_LOOKUP_ELEM] = "BPF_MAP_LOOKUP_ELEM";
+	@bpf_cmd[BPF_MAP_UPDATE_ELEM] = "BPF_MAP_UPDATE_ELEM";
+	@bpf_cmd[BPF_MAP_DELETE_ELEM] = "BPF_MAP_DELETE_ELEM";
+	@bpf_cmd[BPF_MAP_GET_NEXT_KEY] = "BPF_MAP_GET_NEXT_KEY";
+	@bpf_cmd[BPF_PROG_LOAD] = "BPF_PROG_LOAD";
+	@bpf_cmd[BPF_OBJ_PIN] = "BPF_OBJ_PIN";
+	@bpf_cmd[BPF_OBJ_GET] = "BPF_OBJ_GET";
+	@bpf_cmd[BPF_PROG_ATTACH] = "BPF_PROG_ATTACH";
+	@bpf_cmd[BPF_PROG_DETACH] = "BPF_PROG_DETACH";
+
+	/* 系统调用 `bpf_prog_test_run()` */
+	@bpf_cmd[BPF_PROG_TEST_RUN] = "BPF_PROG_TEST_RUN";
+	@bpf_cmd[BPF_PROG_GET_NEXT_ID] = "BPF_PROG_GET_NEXT_ID";
+	@bpf_cmd[BPF_MAP_GET_NEXT_ID] = "BPF_MAP_GET_NEXT_ID";
+	@bpf_cmd[BPF_PROG_GET_FD_BY_ID] = "BPF_PROG_GET_FD_BY_ID";
+	@bpf_cmd[BPF_MAP_GET_FD_BY_ID] = "BPF_MAP_GET_FD_BY_ID";
+	@bpf_cmd[BPF_OBJ_GET_INFO_BY_FD] = "BPF_OBJ_GET_INFO_BY_FD";
+	@bpf_cmd[BPF_PROG_QUERY] = "BPF_PROG_QUERY";
+	@bpf_cmd[BPF_RAW_TRACEPOINT_OPEN] = "BPF_RAW_TRACEPOINT_OPEN";
+	@bpf_cmd[BPF_BTF_LOAD] = "BPF_BTF_LOAD";
+	@bpf_cmd[BPF_BTF_GET_FD_BY_ID] = "BPF_BTF_GET_FD_BY_ID";
+	@bpf_cmd[BPF_TASK_FD_QUERY] = "BPF_TASK_FD_QUERY";
+
+	/*  */
+	@bpf_cmd[BPF_MAP_LOOKUP_AND_DELETE_ELEM] = "BPF_MAP_LOOKUP_AND_DELETE_ELEM";
+	@bpf_cmd[BPF_MAP_FREEZE] = "BPF_MAP_FREEZE";
+	@bpf_cmd[BPF_BTF_GET_NEXT_ID] = "BPF_BTF_GET_NEXT_ID";
+	@bpf_cmd[BPF_MAP_LOOKUP_BATCH] = "BPF_MAP_LOOKUP_BATCH";
+	@bpf_cmd[BPF_MAP_LOOKUP_AND_DELETE_BATCH] = "BPF_MAP_LOOKUP_AND_DELETE_BATCH";
+	@bpf_cmd[BPF_MAP_UPDATE_BATCH] = "BPF_MAP_UPDATE_BATCH";
+	@bpf_cmd[BPF_MAP_DELETE_BATCH] = "BPF_MAP_DELETE_BATCH";
+	@bpf_cmd[BPF_LINK_CREATE] = "BPF_LINK_CREATE";
+	@bpf_cmd[BPF_LINK_UPDATE] = "BPF_LINK_UPDATE";
+	@bpf_cmd[BPF_LINK_GET_FD_BY_ID] = "BPF_LINK_GET_FD_BY_ID";
+	@bpf_cmd[BPF_LINK_GET_NEXT_ID] = "BPF_LINK_GET_NEXT_ID";
+	@bpf_cmd[BPF_ENABLE_STATS] = "BPF_ENABLE_STATS";
+	@bpf_cmd[BPF_ITER_CREATE] = "BPF_ITER_CREATE";
+	@bpf_cmd[BPF_LINK_DETACH] = "BPF_LINK_DETACH";
+	@bpf_cmd[BPF_PROG_BIND_MAP] = "BPF_PROG_BIND_MAP";
+
+	/* more */
+
+	printf("Tracing bpf(2) syscall, press ctrl-C to end.\n");
+	printf("%-8s %-16s %-20s\n", "PID", "COMM", "CMD");
+}
+
+tracepoint:syscalls:sys_enter_bpf
+{
+	$cmd = args->cmd;
+	printf("%-8d %-16s %-20s\n", pid, comm, @bpf_cmd[$cmd]);
+	@cmd_count[@bpf_cmd[$cmd]] = count();
+}
+
+END
+{
+	clear(@bpf_cmd);
+	printf("Bye.\n");
+}
