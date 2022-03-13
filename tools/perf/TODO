@@ -1,2 +1,3 @@
 https://github.com/rtoax/test/tree/master/linux/cmd/perf
 https://gitee.com/rtoax/test/tree/master/linux/cmd/perf
+	test/commands/perf/brendangregg/perf/5.events
