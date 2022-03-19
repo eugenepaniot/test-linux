@@ -1,0 +1,16 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+	printf("Tracing total_mapping_size(), hit ctrl-c to end.\n");
+}
+
+kretprobe:total_mapping_size
+{
+	printf("comm = %s size = %ld\n %s\n", comm, retval, kstack);
+}
+
+END
+{
+	printf("Bye.\n");
+}
