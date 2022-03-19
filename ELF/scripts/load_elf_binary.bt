@@ -1,0 +1,21 @@
+#!/usr/bin/env bpftrace
+
+#include <linux/binfmts.h> // struct linux_binprm
+
+BEGIN
+{
+	printf("Tracing load_elf_binary(), hit ctrl-C to end.\n");
+}
+
+kprobe:load_elf_binary
+{
+	printf("load_elf_binary\n");
+	$binprm = (struct linux_binprm*)arg0;
+
+	//TODO
+}
+
+END
+{
+	printf("Bye.\n");
+}

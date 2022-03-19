@@ -1,0 +1,21 @@
+#!/usr/bin/env bpftrace
+
+#include <linux/binfmts.h> // struct coredump_params
+
+BEGIN
+{
+	printf("Tracing elf_core_dump(), hit ctrl-C to end.\n");
+}
+
+kprobe:elf_core_dump
+{
+	printf("elf_core_dump\n");
+	$params = (struct coredump_params*)arg0;
+
+	//TODO
+}
+
+END
+{
+	printf("Bye.\n");
+}

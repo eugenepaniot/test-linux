@@ -1,0 +1,19 @@
+#!/usr/bin/env bpftrace
+
+#include <linux/fs.h>
+
+BEGIN
+{
+	printf("Tracing load_elf_library(), hit ctrl-C to end.\n");
+}
+
+kprobe:load_elf_library
+{
+	printf("load_elf_library\n");
+	$file = (struct file*)arg0;
+}
+
+END
+{
+	printf("Bye.\n");
+}
