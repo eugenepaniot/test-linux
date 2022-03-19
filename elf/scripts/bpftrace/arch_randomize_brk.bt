@@ -1,0 +1,16 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+	printf("Tracing arch_randomize_brk(), hit ctrl-c to end.\n");
+}
+
+kretprobe:arch_randomize_brk
+{
+	printf("comm = %s %016lx\n %s\n", comm, retval, kstack);
+}
+
+END
+{
+	printf("Bye.\n");
+}
