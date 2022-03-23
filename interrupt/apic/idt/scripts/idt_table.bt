@@ -1,0 +1,36 @@
+#!/usr/bin/env bpftrace
+
+#include <linux/types.h>
+
+struct desc_struct {
+	u16	limit0;
+	u16	base0;
+	u16	base1: 8, type: 4, s: 1, dpl: 2, p: 1;
+	u16	limit1: 4, avl: 1, l: 1, d: 1, g: 1, base2: 8;
+};
+
+BEGIN
+{
+	printf("Reading idt_table[IDT_ENTRIES]. Hit Ctrl-C to end.\n");
+
+	$idt_table = kaddr("idt_table");
+
+	//Divide Error
+	$de  = (struct desc_struct *)$idt_table;
+	//Reserved
+	$db  = (struct desc_struct *)($idt_table + sizeof(struct desc_struct) * 1);
+	//NMI
+	$nmi = (struct desc_struct *)($idt_table + sizeof(struct desc_struct) * 2);
+	//Breakpoint
+	$bp  = (struct desc_struct *)($idt_table + sizeof(struct desc_struct) * 3);
+	//Overflow
+	$of  = (struct desc_struct *)($idt_table + sizeof(struct desc_struct) * 4);
+	printf("%d %d %d %d\n", $of->base0, $of->base1, $of->base2, $of->dpl);
+
+	//TODO
+}
+
+END
+{
+	printf("Bye.\n");
+}
