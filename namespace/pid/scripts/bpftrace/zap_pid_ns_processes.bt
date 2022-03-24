@@ -1,0 +1,14 @@
+#!/usr/bin/env bpftrace
+
+#include <linux/pid_namespace.h>
+
+BEGIN
+{
+	printf("Tracing kprobe:zap_pid_ns_processes, hit ctrl-c to end.\n");
+}
+
+kprobe:zap_pid_ns_processes
+{
+	$pid_ns = (struct pid_namespace*)arg0;
+    printf("comm = %s, pid = %d, pid_allocated = %u\n", comm, pid, $pid_ns->pid_allocated);
+}
