@@ -20,14 +20,14 @@ static int __init find_pidtest_init(void)
 	int PID = test_task_pid;
 	bool has_task;
 	struct pid *pid;
-	struct task_struct *task;
+	struct task_struct *task, *child_reaper;
 	struct pid_namespace *pid_ns;
 
 	printk("find_pidtest_init.\n");
 
 	pid = find_get_pid(PID);
 	if(!pid) {
-		printk("Not exist PID %d\n", PID);
+		printk("Not exist PID %d, level = %d\n", PID, pid->level);
 		return -1;
 	}
 
@@ -48,8 +48,9 @@ static int __init find_pidtest_init(void)
 
 	pid_ns = task_active_pid_ns(task);
 	if (pid_ns) {
-		printk("PID %d task name %s, has ns pid_allocated = %u\n",
-		 PID, task->comm, pid_ns->pid_allocated);
+		child_reaper = pid_ns->child_reaper;
+		printk("PID %d COMM %s pid_allocated = 0x%08x, level = %d, reaper pid = %d\n",
+		 PID, task->comm, pid_ns->pid_allocated, pid_ns->level, child_reaper->pid);
 	}
 	return 0;
 }
