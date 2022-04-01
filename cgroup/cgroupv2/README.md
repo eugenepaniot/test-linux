@@ -20,4 +20,5 @@ Cgroup v2 是 cgroup Linux API 的下一个版本。与 cgroup v1 不同的是�
 
 # Refs
 
+* [Linux Documentation: Control Group v2](https://www.kernel.org/doc/Documentation/cgroup-v2.txt)
 * [K8s 容器运行时](https://kubernetes.io/zh/docs/setup/production-environment/container-runtimes/)
