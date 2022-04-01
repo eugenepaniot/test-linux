@@ -1,0 +1,35 @@
+#!/usr/bin/env bpftrace
+/**
+ * File tasklet_action.bt
+ * Author: Rong Tao <rongtao@cestc.cn>
+ * Date: 2022-04-01
+ *
+ */
+#include <linux/interrupt.h>
+
+BEGIN
+{
+	printf("Tracing tasklet_action, hit ctrl-C to end.\n");
+}
+
+kprobe:tasklet_action,
+kprobe:tasklet_hi_action
+{
+	$softirq_action = (struct softirq_action*)arg0;
+
+	@start[pid] = nsecs;
+}
+
+kretprobe:tasklet_action,
+kretprobe:tasklet_hi_action
+/@start[pid]/
+{
+	@latency_us[pid, comm] = hist((nsecs - @start[pid]) / 1000);
+	delete(@start[pid]);
+}
+
+END
+{
+	clear(@start);
+	printf("Bye.\n");
+}

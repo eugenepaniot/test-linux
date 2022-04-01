@@ -1,0 +1,35 @@
+#!/usr/bin/env bpftrace
+/**
+ * File tasklet_schedule.bt
+ * Author: Rong Tao <rongtao@cestc.cn>
+ * Date: 2022-04-01
+ *
+ */
+#include <linux/interrupt.h>
+
+BEGIN
+{
+	printf("Tracing tasklet_schedule, hit ctrl-C to end.\n");
+}
+
+kprobe:__tasklet_schedule,
+kprobe:__tasklet_hi_schedule
+{
+	$tasklet_struct = (struct tasklet_struct*)arg0;
+
+	@start[pid] = nsecs;
+}
+
+kretprobe:__tasklet_schedule,
+kretprobe:__tasklet_hi_schedule
+/@start[pid]/
+{
+	@latency_us[pid, comm] = hist((nsecs - @start[pid]) / 1000);
+	delete(@start[pid]);
+}
+
+END
+{
+	clear(@start);
+	printf("Bye.\n");
+}
