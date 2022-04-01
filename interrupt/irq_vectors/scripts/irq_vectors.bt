@@ -1,0 +1,6 @@
+#!/usr/bin/env bpftrace
+
+tracepoint:irq_vectors:*
+{
+	//TODO
+}

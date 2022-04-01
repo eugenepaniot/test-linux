@@ -1,4 +1,6 @@
 hardirq
 ==============
 
-
+```
+cat /proc/interrupts
+```
