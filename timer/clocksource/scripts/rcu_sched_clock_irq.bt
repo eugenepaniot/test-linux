@@ -1,0 +1,16 @@
+#!/usr/bin/env bpftrace
+/**
+ * File: rcu_sched_clock_irq.bt
+ * Author: Rong Tao <rongtao@cestc.cn>
+ * Date: 2022-04-02
+ */
+
+BEGIN
+{
+	printf("Tracing rcu_sched_clock_irq(), hit ctrl-c to end.\n");
+}
+
+kprobe:rcu_sched_clock_irq
+{
+	@[comm, cpu] = count();
+}
