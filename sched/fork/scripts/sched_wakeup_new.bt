@@ -1,0 +1,28 @@
+#!/usr/bin/env bpftrace
+/**
+ * File: sched_wakeup_new.bt
+ * Author: Rong Tao <rongtao@cestc.cn>
+ * Date: 2022.04.05
+ * 
+ */
+
+
+BEGIN
+{
+	printf("Tracing sched_wakeup_new, hit ctrl-c to end.\n");
+	printf("%-8s %-16s %-8s %-6s %-6s %-6s\n",
+	   "TIME", "COMM", "PID", "PRIO", "SUCCE", "TARGET");
+}
+
+tracepoint:sched:sched_wakeup_new
+{
+	$comm_ = args->comm;
+	$pid = args->pid;
+	$prio = args->prio;
+	$success = args->success;
+	$target_cpu = args->target_cpu;
+
+	time("%H:%M:%S ");
+	printf("%-16s %-8d %-6d %-6d %-6d\n",
+	   $comm_, $pid, $prio, $success, $target_cpu);
+}
