@@ -5,9 +5,13 @@ BEGIN
 	printf("Tracing arch_randomize_brk(), hit ctrl-c to end.\n");
 }
 
+kprobe:arch_randomize_brk
+{
+	printf("comm = %s %s\n", comm, kstack);
+}
 kretprobe:arch_randomize_brk
 {
-	printf("comm = %s %016lx\n %s\n", comm, retval, kstack);
+	printf("comm = %s %016lx\n", comm, retval);
 }
 
 END

@@ -5,9 +5,14 @@ BEGIN
 	printf("Tracing arch_mmap_rnd(), hit ctrl-c to end.\n");
 }
 
+kprobe:arch_mmap_rnd
+{
+	printf("comm = %s %s\n", comm, kstack);
+}
+
 kretprobe:arch_mmap_rnd
 {
-	printf("comm = %s %016lx\n %s\n", comm, retval, kstack);
+	printf("comm = %s, %016lx\n", comm, retval);
 }
 
 END
