@@ -1,0 +1,16 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+	printf("Tracing\n");
+}
+
+kprobe:kaslr_get_random_long
+{
+	printf("comm = %s\n", comm);
+}
+
+END
+{
+	printf("Bye.\n");
+}
