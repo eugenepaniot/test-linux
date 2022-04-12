@@ -1,0 +1,29 @@
+#!/usr/bin/env bpftrace
+/**
+ * File: add_to_page_cache_lru.bt
+ * Author: Rong Tao (rongtao@cestc.cn)
+ * Date: 2022年4月12日
+ */
+
+#include <linux/fs.h>
+
+BEGIN
+{
+	printf("Tracing add_to_page_cache_lru, Hit ctrl-C to end.\n");
+}
+
+kprobe:add_to_page_cache_lru
+{
+	$page = (struct page *)arg0; 
+	$mapping = (struct address_space *)arg1;
+
+}
+
+interval:s:3
+{
+}
+
+END
+{
+	printf("Bye.\n");
+}
