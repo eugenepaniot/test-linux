@@ -15,7 +15,13 @@ kprobe:d_alloc
 
 	//printf("%s\n", str($name));
 
-	@d_alloc_count[comm, pid] = count();
+	@d_alloc_count[probe, comm, pid] = count();
+}
+
+kprobe:d_alloc_anon,
+kprobe:d_alloc_pseudo
+{
+	@d_alloc_count[probe, comm, pid] = count();
 }
 
 END
