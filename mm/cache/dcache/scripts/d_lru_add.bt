@@ -1,0 +1,41 @@
+#!/usr/bin/bpftrace --unsafe
+/**
+ * File: d_lru_add.bt
+ * Authro: Rong Tao <rongtao@cestc.cn>
+ * Date: 2022-04-13
+ *
+ */
+#include <linux/dcache.h>
+
+BEGIN
+{
+	printf("Tracing d_lru_add(), hit ctrl-C to end.\n");
+}
+
+/**
+ * 测试: 
+ *	while :; do ls `mktemp /tmp/rongXXX`; done
+ *
+ * TODO: 当执行上面测试程序时，很容易将 map 打满
+ */
+kprobe:d_lru_add
+{
+	$dentry = (struct dentry*)arg0;
+	$name = $dentry->d_name.name;
+
+	//printf("%s\n", str($name));
+
+	@d_lru_add_count[str($name)] = count();
+}
+
+interval:s:1
+{
+	system("clear");
+	print(@d_lru_add_count, 20);
+}
+
+END
+{
+	clear(@d_lru_add_count);
+	printf("Bye.\n");
+}
