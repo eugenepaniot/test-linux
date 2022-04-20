@@ -66,7 +66,10 @@ kprobe:unix_stream_read_actor
 	//$_msghdr = (struct MsgHdr *)$skb->data;
 
 	printf("%-5d  ", $skb->len);
-	printf("%s\n", str($data));
+	/**
+	 * 这里也许需要 一个 '\n'
+	 */
+	printf("%s", str($data));
 	//printf("(%d->%d) id %d\n", $_msghdr->src, $_msghdr->dst, $_msghdr->id);
 	
 }
