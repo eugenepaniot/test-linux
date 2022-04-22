@@ -48,7 +48,7 @@ kretprobe:__d_alloc
 	$dentry = (struct dentry *)retval;
 
 	if ($dentry != 0) {
-		@dcount["  ALLOC"] = count();
+		@dcount["   ALLOC"] = count();
 	}
 }
 
@@ -56,21 +56,25 @@ kretprobe:__d_alloc
 kprobe:__d_free,
 kprobe:__d_free_external
 {
-	@dcount["   FREE"] = count();
+	@dcount["    FREE"] = count();
 }
 
 kprobe:d_lru_add,
 kprobe:d_shrink_add
 {
-	@dcount["LRU_ADD"] = count();
+	@dcount[" LRU_ADD"] = count();
 }
 
 kprobe:d_lru_del,
 kprobe:d_shrink_del
 {
-	@dcount["LRU_DEL"] = count();
+	@dcount[" LRU_DEL"] = count();
 }
 
+kprobe:__d_rehash
+{
+	@dcount["HASH_ADD"] = count();
+}
 
 interval:s:1
 {
