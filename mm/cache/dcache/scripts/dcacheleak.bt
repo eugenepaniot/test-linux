@@ -28,30 +28,21 @@ BEGIN
 	printf("Tracing dcache leak. press ctrl-c to end.\n");
 }
 
-/**
- * 这种方法读取 $dentry_cache 有问题
-kprobe:kmem_cache_alloc
+kretprobe:kmem_cache_alloc
 {
-	$dentry_cache = (struct kmem_cache *)kaddr("dentry_cache");
-	$kmem_cache = (struct kmem_cache *)arg0;
-
-	printf("ALLOC dcache. %lx %lx\n", $dentry_cache, $kmem_cache);
-
-	if ($dentry_cache == $kmem_cache) {
-		printf("ALLOC dcache.\n");
+	@kmem_cache[pid] = 0;
+	if (retval) {
+		@kmem_cache[pid] = 1;
 	}
 }
-*/
 
 kretprobe:__d_alloc
+/@kmem_cache[pid] == 1/
 {
-	$dentry = (struct dentry *)retval;
 
-	if ($dentry != 0) {
-		@dcount["   ALLOC"] = count();
-	}
+	@dcount["   ALLOC"] = count();
+	@kmem_cache[pid] = 0;
 }
-
 
 kprobe:__d_free,
 kprobe:__d_free_external
@@ -76,6 +67,20 @@ kprobe:__d_rehash
 	@dcount["HASH_ADD"] = count();
 }
 
+kprobe:__d_instantiate_anon
+{
+	$disconnected = arg2;
+
+	if (!$disconnected) {
+		@dcount["HASH_ADD"] = count();
+	}
+}
+
+kprobe:___d_drop
+{
+	@dcount["HASH_DEL"] = count();
+}
+
 interval:s:1
 {
 	system("clear");
@@ -87,5 +92,6 @@ interval:s:1
 END
 {
 	clear(@dcount);
+	clear(@kmem_cache);
 	printf("Bye.\n");
 }
