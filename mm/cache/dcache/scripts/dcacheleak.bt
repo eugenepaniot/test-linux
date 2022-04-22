@@ -39,8 +39,9 @@ kretprobe:kmem_cache_alloc
 kretprobe:__d_alloc
 /@kmem_cache[pid] == 1/
 {
-
-	@dcount["   ALLOC"] = count();
+	if (retval) {
+		@dcount["   ALLOC"] = count();
+	}
 	@kmem_cache[pid] = 0;
 }
 
