@@ -28,21 +28,13 @@ BEGIN
 	printf("Tracing dcache leak. press ctrl-c to end.\n");
 }
 
-kretprobe:kmem_cache_alloc
-{
-	@kmem_cache[pid] = 0;
-	if (retval) {
-		@kmem_cache[pid] = 1;
-	}
-}
-
 kretprobe:__d_alloc
-/@kmem_cache[pid] == 1/
 {
 	if (retval) {
 		@dcount["   ALLOC"] = count();
+	} else {
+		@dcount[" x ALLOC"] = count();
 	}
-	@kmem_cache[pid] = 0;
 }
 
 kprobe:__d_free,
@@ -93,6 +85,5 @@ interval:s:1
 END
 {
 	clear(@dcount);
-	clear(@kmem_cache);
 	printf("Bye.\n");
 }
