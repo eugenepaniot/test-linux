@@ -1,0 +1,129 @@
+#!/usr/bin/bpftrace --unsafe
+/**
+ * File: dcacheleak.bt 
+ *
+ * Description: Check dentry slab memory leak
+ *
+ * Author: Rong Tao <rongtao@cestc.cn>
+ * Data: 2022-04-22
+ *
+ * How to test:
+ * -------------------------------------------------
+ * 1. Execute dcacheleak.bt
+ *  $ sudo ./dcacheleak.bt
+ *
+ * 2. Genrate negtive dentry: 
+ *  $ while :; do cd `mktemp -u /tmp/rongtaoXXX`; done
+ *
+ * 3. Drop dcaches:
+ *  $ echo 2 > /proc/sys/vm/drop_caches
+ *
+ */
+#include <linux/slab.h>
+#include <linux/dcache.h>
+
+BEGIN
+{
+	printf("Tracing dcache leak. press ctrl-c to end.\n");
+}
+
+/**
+ * 这种方法读取 $dentry_cache 有问题
+kprobe:kmem_cache_alloc
+{
+	$dentry_cache = (struct kmem_cache *)kaddr("dentry_cache");
+	$kmem_cache = (struct kmem_cache *)arg0;
+
+	printf("ALLOC dcache. %lx %lx\n", $dentry_cache, $kmem_cache);
+
+	if ($dentry_cache == $kmem_cache) {
+		printf("ALLOC dcache.\n");
+	}
+}
+*/
+
+kretprobe:__d_alloc
+{
+	$dentry = (struct dentry *)retval;
+
+	if ($dentry != 0) {
+		@dcount["  ALLOC"] = count();
+	}
+}
+
+
+kprobe:__d_free,
+kprobe:__d_free_external
+{
+	@dcount["   FREE"] = count();
+}
+
+kprobe:d_lru_add
+{
+	$dentry = (struct dentry *)arg0;
+
+	@dcount["LRU_ADD"] = count();
+
+	//if (($dentry->d_flags & DCACHE_ENTRY_TYPE) == DCACHE_MISS_TYPE) {
+	//	@dcount["NEG_INC"] = count();
+	//}
+}
+
+kprobe:d_lru_del
+{
+	$dentry = (struct dentry *)arg0;
+
+	@dcount["LRU_DEL"] = count();
+
+	//if (($dentry->d_flags & DCACHE_ENTRY_TYPE) == DCACHE_MISS_TYPE) {
+	//	@dcount["NEG_DEC"] = count();
+	//}
+}
+
+/**
+kprobe:__d_clear_type_and_inode
+{
+	$dentry = (struct dentry *)arg0;
+
+	if ($dentry->d_flags & DCACHE_LRU_LIST) {
+		@dcount["NEG_INC"] = count();
+	}
+}
+*/
+
+/**
+kprobe:d_lru_isolate,
+kprobe:d_lru_shrink_move
+{
+	$dentry = (struct dentry *)arg1;
+
+	if (($dentry->d_flags & DCACHE_ENTRY_TYPE) == DCACHE_MISS_TYPE) {
+		@dcount["NEG_DEC"] = count();
+	}
+}
+*/
+
+/**
+kprobe:__d_instantiate
+{
+	$dentry = (struct dentry *)arg0;
+
+	if ($dentry->d_flags & DCACHE_LRU_LIST) {
+		@dcount["NEG_DEC"] = count();
+	}
+}
+*/
+
+interval:s:1
+{
+	system("clear");
+	system("echo /proc/sys/fs/dentry-state");
+	system("cat /proc/sys/fs/dentry-state");
+	print(@dcount);
+}
+
+END
+{
+	clear(@dcount);
+	printf("Bye.\n");
+}

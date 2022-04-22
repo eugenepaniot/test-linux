@@ -1,4 +1,5 @@
 #!/bin/bash
+# 创建文件夹，文件
 
 # 创建文件
 test_create_file()
@@ -40,6 +41,11 @@ test_create_dir()
 	rm -rf ./test.out
 }
 
-#test_create_file
-#test_create_dir
-
+# 生成 negative dentry
+test_create_neg_dentry
+{
+	while :; 
+	do 
+		cd `mktemp -u /tmp/rongXXX` 2>/dev/null
+	done
+}
