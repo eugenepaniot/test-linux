@@ -9,14 +9,15 @@
  *
  * How to test:
  * -------------------------------------------------
- * 1. Execute dcacheleak.bt
+ * 1. Drop dcaches first, to make ALLOC & FREE even:
+ *  $ echo 2 > /proc/sys/vm/drop_caches
+ *
+ * 2. Execute dcacheleak.bt
  *  $ sudo ./dcacheleak.bt
  *
- * 2. Genrate negtive dentry: 
- *  $ while :; do cd `mktemp -u /tmp/rongtaoXXX`; done
+ * 3. Genrate negtive dentry:
+ *  $ while :; do cd `mktemp -u /tmp/rongtaoXXX` 2>/dev/null; done
  *
- * 3. Drop dcaches:
- *  $ echo 2 > /proc/sys/vm/drop_caches
  *
  */
 #include <linux/slab.h>
@@ -60,7 +61,7 @@ kprobe:__d_free_external
 
 kprobe:d_lru_add
 {
-	$dentry = (struct dentry *)arg0;
+	//$dentry = (struct dentry *)arg0;
 
 	@dcount["LRU_ADD"] = count();
 
@@ -71,7 +72,7 @@ kprobe:d_lru_add
 
 kprobe:d_lru_del
 {
-	$dentry = (struct dentry *)arg0;
+	//$dentry = (struct dentry *)arg0;
 
 	@dcount["LRU_DEL"] = count();
 
