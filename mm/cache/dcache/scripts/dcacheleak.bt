@@ -59,7 +59,8 @@ kprobe:__d_free_external
 	@dcount["   FREE"] = count();
 }
 
-kprobe:d_lru_add
+kprobe:d_lru_add,
+kprobe:d_shrink_add
 {
 	//$dentry = (struct dentry *)arg0;
 
@@ -70,7 +71,8 @@ kprobe:d_lru_add
 	//}
 }
 
-kprobe:d_lru_del
+kprobe:d_lru_del,
+kprobe:d_shrink_del
 {
 	//$dentry = (struct dentry *)arg0;
 
