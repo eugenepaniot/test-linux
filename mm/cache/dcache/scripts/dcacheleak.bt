@@ -62,60 +62,15 @@ kprobe:__d_free_external
 kprobe:d_lru_add,
 kprobe:d_shrink_add
 {
-	//$dentry = (struct dentry *)arg0;
-
 	@dcount["LRU_ADD"] = count();
-
-	//if (($dentry->d_flags & DCACHE_ENTRY_TYPE) == DCACHE_MISS_TYPE) {
-	//	@dcount["NEG_INC"] = count();
-	//}
 }
 
 kprobe:d_lru_del,
 kprobe:d_shrink_del
 {
-	//$dentry = (struct dentry *)arg0;
-
 	@dcount["LRU_DEL"] = count();
-
-	//if (($dentry->d_flags & DCACHE_ENTRY_TYPE) == DCACHE_MISS_TYPE) {
-	//	@dcount["NEG_DEC"] = count();
-	//}
 }
 
-/**
-kprobe:__d_clear_type_and_inode
-{
-	$dentry = (struct dentry *)arg0;
-
-	if ($dentry->d_flags & DCACHE_LRU_LIST) {
-		@dcount["NEG_INC"] = count();
-	}
-}
-*/
-
-/**
-kprobe:d_lru_isolate,
-kprobe:d_lru_shrink_move
-{
-	$dentry = (struct dentry *)arg1;
-
-	if (($dentry->d_flags & DCACHE_ENTRY_TYPE) == DCACHE_MISS_TYPE) {
-		@dcount["NEG_DEC"] = count();
-	}
-}
-*/
-
-/**
-kprobe:__d_instantiate
-{
-	$dentry = (struct dentry *)arg0;
-
-	if ($dentry->d_flags & DCACHE_LRU_LIST) {
-		@dcount["NEG_DEC"] = count();
-	}
-}
-*/
 
 interval:s:1
 {
