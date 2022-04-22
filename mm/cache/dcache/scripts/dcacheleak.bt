@@ -60,6 +60,10 @@ kprobe:__d_rehash
 	@dcount["HASH_ADD"] = count();
 }
 
+/**
+ * ERROR in Ubuntu 20.04.4 LTS
+ * https://github.com/iovisor/bpftrace/issues/2199
+ */
 kprobe:__d_instantiate_anon
 {
 	$disconnected = arg2;
