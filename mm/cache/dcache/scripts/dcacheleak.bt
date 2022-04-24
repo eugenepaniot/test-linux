@@ -33,6 +33,7 @@ BEGIN
 	printf("Tracing dcache leak. press ctrl-c to end.\n");
 }
 
+/*
 kretprobe:__d_alloc
 {
 	if (retval) {
@@ -49,6 +50,7 @@ kprobe:__d_free_external
 {
 	@dcount["    FREE"] = count();
 }
+*/
 
 kprobe:kmem_cache_alloc,
 kprobe:kmem_cache_alloc_node
@@ -58,6 +60,7 @@ kprobe:kmem_cache_alloc_node
 
 	if (!strncmp(str($name), "dentry", 5)) {
 		@dcount[" K ALLOC"] = count();
+		@alloc_kstack_count[kstack] = count();
 	}
 }
 
@@ -68,7 +71,13 @@ kprobe:kmem_cache_free
 
 	if (!strncmp(str($name), "dentry", 5)) {
 		@dcount[" K  FREE"] = count();
+		@free_kstack_count[kstack] = count();
 	}
+}
+
+kprobe:__fput
+{
+	@dcount["  __fput"] = count();
 }
 
 kprobe:d_lru_add,
