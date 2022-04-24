@@ -10,12 +10,13 @@
  * How to test:
  * -------------------------------------------------
  * 1. Drop dcaches first, to make ALLOC & FREE even:
- *  $ echo 2 > /proc/sys/vm/drop_caches
+ *  $ while :; do sudo sh -c "echo 2 > /proc/sys/vm/drop_caches"; done
  *
  * 2. Execute dcacheleak.bt
  *  $ sudo ./dcacheleak.bt
  *
- * 3. Genrate negtive dentry:
+ * 3. Genrate negative dentry,
+ *    It's should be "-bash: cd: /tmp/rongtaoj7p: No such file or directory"
  *  $ while :; do cd `mktemp -u /tmp/rongtaoXXX` 2>/dev/null; done
  *
  *
