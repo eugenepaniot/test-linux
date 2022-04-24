@@ -45,6 +45,8 @@ kretprobe:__d_alloc
 {
 	if (retval) {
 		@dcount["   ALLOC"] = count();
+		$dentry = (struct dentry *)retval;
+		@lockref_count["    ALLOC"] = hist($dentry->d_lockref.count);
 	} else {
 		@dcount[" x ALLOC"] = count();
 	}
@@ -60,17 +62,23 @@ kprobe:__d_free_external
 kprobe:d_lru_add,
 kprobe:d_shrink_add
 {
+	$dentry = (struct dentry *)arg0;
+	@lockref_count[" LRU_ADD"] = hist($dentry->d_lockref.count);
 	@dcount[" LRU_ADD"] = count();
 }
 
 kprobe:d_lru_del,
 kprobe:d_shrink_del
 {
+	$dentry = (struct dentry *)arg0;
+	@lockref_count[" LRU_DEL"] = hist($dentry->d_lockref.count);
 	@dcount[" LRU_DEL"] = count();
 }
 
 kprobe:__d_rehash
 {
+	$dentry = (struct dentry *)arg0;
+	@lockref_count["HASH_ADD"] = hist($dentry->d_lockref.count);
 	@dcount["HASH_ADD"] = count();
 }
 
@@ -89,6 +97,8 @@ kprobe:__d_instantiate_anon
 
 kprobe:___d_drop
 {
+	$dentry = (struct dentry *)arg0;
+	@lockref_count["HASH_DEL"] = hist($dentry->d_lockref.count);
 	@dcount["HASH_DEL"] = count();
 }
 
@@ -98,6 +108,7 @@ interval:s:1
 	system("echo /proc/sys/fs/dentry-state");
 	system("cat /proc/sys/fs/dentry-state");
 	print(@dcount);
+	print(@lockref_count);
 }
 
 END
