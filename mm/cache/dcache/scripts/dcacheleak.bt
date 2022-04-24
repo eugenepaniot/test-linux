@@ -25,16 +25,12 @@
  *  192
  */
 #include <linux/slab.h>
+#include <linux/slub_def.h>
 #include <linux/dcache.h>
 
 BEGIN
 {
 	printf("Tracing dcache leak. press ctrl-c to end.\n");
-}
-
-kprobe:__d_alloc
-{
-	@d_alloc_flag[pid] = 1;
 }
 
 kretprobe:__d_alloc
@@ -46,31 +42,32 @@ kretprobe:__d_alloc
 	} else {
 		@dcount[" x ALLOC"] = count();
 	}
-	@d_alloc_flag[pid] = 0;
 }
 
 kprobe:__d_free,
 kprobe:__d_free_external
 {
-	@d_free_flag[pid] = 1;
+	@dcount["    FREE"] = count();
 }
 
-kretprobe:__d_free,
-kretprobe:__d_free_external
+kprobe:kmem_cache_alloc,
+kprobe:kmem_cache_alloc_node
 {
-	@d_free_flag[pid] = 0;
+	$cachep = (struct kmem_cache *)arg0;
+	$name = $cachep->name;
+
+	if (!strncmp(str($name), "dentry", 5)) {
+		@dcount[" K ALLOC"] = count();
+	}
 }
 
 kprobe:kmem_cache_free
-/@d_alloc_flag[pid] == 1 || @d_free_flag[pid] == 1/
 {
-	if (@d_alloc_flag[pid] == 1) {
-		/* Called in __d_alloc */
-		@dcount[" x ALLOC"] = count();
-	}
-	if (@d_free_flag[pid] == 1) {
-		/* Called in __d_free/__d_free_external */
-		@dcount["    FREE"] = count();
+	$cachep = (struct kmem_cache *)arg0;
+	$name = $cachep->name;
+
+	if (!strncmp(str($name), "dentry", 5)) {
+		@dcount[" K  FREE"] = count();
 	}
 }
 
@@ -129,7 +126,5 @@ interval:s:1
 END
 {
 	clear(@dcount);
-	clear(@d_alloc_flag);
-	clear(@d_free_flag);
 	printf("Bye.\n");
 }
