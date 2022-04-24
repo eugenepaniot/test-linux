@@ -19,7 +19,10 @@
  *    It's should be "-bash: cd: /tmp/rongtaoj7p: No such file or directory"
  *  $ while :; do cd `mktemp -u /tmp/rongtaoXXX` 2>/dev/null; done
  *
- *
+ * PS:
+ *  kmem_cache_alloc() maybe use "kmalloc-192" slab, see
+ *  $ sudo cat /sys/kernel/slab/dentry/object_size
+ *  192
  */
 #include <linux/slab.h>
 #include <linux/dcache.h>
@@ -32,13 +35,6 @@ BEGIN
 kprobe:__d_alloc
 {
 	@d_alloc_flag[pid] = 1;
-}
-
-/* Called in __d_alloc */
-kprobe:kmem_cache_free
-/@d_alloc_flag[pid] == 1/
-{
-	@dcount[" x ALLOC"] = count();
 }
 
 kretprobe:__d_alloc
@@ -56,7 +52,26 @@ kretprobe:__d_alloc
 kprobe:__d_free,
 kprobe:__d_free_external
 {
-	@dcount["    FREE"] = count();
+	@d_free_flag[pid] = 1;
+}
+
+kretprobe:__d_free,
+kretprobe:__d_free_external
+{
+	@d_free_flag[pid] = 0;
+}
+
+kprobe:kmem_cache_free
+/@d_alloc_flag[pid] == 1 || @d_free_flag[pid] == 1/
+{
+	if (@d_alloc_flag[pid] == 1) {
+		/* Called in __d_alloc */
+		@dcount[" x ALLOC"] = count();
+	}
+	if (@d_free_flag[pid] == 1) {
+		/* Called in __d_free/__d_free_external */
+		@dcount["    FREE"] = count();
+	}
 }
 
 kprobe:d_lru_add,
@@ -115,5 +130,6 @@ END
 {
 	clear(@dcount);
 	clear(@d_alloc_flag);
+	clear(@d_free_flag);
 	printf("Bye.\n");
 }
