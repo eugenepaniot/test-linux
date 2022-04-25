@@ -9,14 +9,13 @@
 BEGIN
 {
 	printf("Tracing fork(2),clone(2),exec(2) latency.\n");
-	printf("%-10s %-10s\n", "PID", "COMM");
+	printf("%-10s %-10s %-10s\n", "PID", "COMM", "USECS");
 }
 
 tracepoint:syscalls:sys_enter_fork,
 tracepoint:syscalls:sys_enter_clone*,
 tracepoint:syscalls:sys_enter_exec*
 {
-	printf("%-10d %-10s\n", pid, comm);
 	@start[pid] = nsecs;
 }
 
@@ -26,6 +25,11 @@ tracepoint:syscalls:sys_exit_exec*
 / @start[pid] /
 {
 	@usecs[probe] = hist((nsecs - @start[pid]) / 1000);
+	if ((nsecs - @start[pid]) > 1000000000) {
+		printf("\033[1;31m%-10d %-10s\033[m %-8s\n", pid, comm, ">1s");
+	} else {
+		printf("%-10d %-10s\n", pid, comm);
+	}
 	delete(@start[pid]);
 }
 
