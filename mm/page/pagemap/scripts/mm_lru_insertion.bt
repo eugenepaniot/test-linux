@@ -1,0 +1,30 @@
+#!/usr/bin/env bpftrace
+/**
+ * File mm_lru_insertion.bt
+ *
+ * Author Rong Tao <rongtao@cestc.cn>
+ * Date 2022-04-25
+ */
+#include <linux/mmzone.h>
+
+BEGIN
+{
+	printf("Tracing mm_lru_insertion, hit ctrl-C to end.\n");
+
+	@lru_list[LRU_INACTIVE_ANON]	= "LRU_INACTIVE_ANON";
+	@lru_list[LRU_ACTIVE_ANON]		= "  LRU_ACTIVE_ANON";
+	@lru_list[LRU_INACTIVE_FILE]	= "LRU_INACTIVE_FILE";
+	@lru_list[LRU_ACTIVE_FILE]		= "  LRU_ACTIVE_FILE";
+	@lru_list[LRU_UNEVICTABLE]		= "  LRU_UNEVICTABLE";
+}
+
+tracepoint:pagemap:mm_lru_insertion
+{
+	$lru = args->lru;
+	@lru_list_cnt[@lru_list[$lru]] = count();
+}
+
+END
+{
+	clear(@lru_list);
+}
