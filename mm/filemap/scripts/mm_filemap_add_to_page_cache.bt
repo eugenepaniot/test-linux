@@ -1,0 +1,18 @@
+#!/usr/bin/env bpftrace
+/**
+ * File mm_filemap_add_to_page_cache.bt
+ * 
+ * Author Rong Tao <rongtao@cestc.cn>
+ * Date 2022-04-25
+ */
+#include <linux/fs.h>
+
+tracepoint:filemap:mm_filemap_add_to_page_cache
+{
+	printf("%s\n", probe);
+}
+
+tracepoint:filemap:mm_filemap_delete_from_page_cache
+{
+	printf("%s\n", probe);
+}

@@ -1,0 +1,13 @@
+#!/usr/bin/env bpftrace
+/**
+ * File xfs_filemap_fault.bt
+ * 
+ * Author Rong Tao <rongtao@cestc.cn>
+ * Date 2022-04-25
+ */
+#include <linux/fs.h>
+
+tracepoint:xfs:xfs_filemap_fault
+{
+	printf("%s\n", probe);
+}
